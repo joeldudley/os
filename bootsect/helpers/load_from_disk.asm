@@ -28,16 +28,13 @@ disk_load:
     ret
 
 disk_error:
+    DISK_ERROR: db "Disk read error", 0
     mov bx, DISK_ERROR
-    call rm_print
-    jmp disk_loop
-
-sectors_error:
-    mov bx, SECTORS_ERROR
-    call rm_print
-
-disk_loop:
+    call print
     jmp $
 
-DISK_ERROR: db "Disk read error", 0
-SECTORS_ERROR: db "Incorrect number of sectors read", 0
+sectors_error:
+    SECTORS_ERROR: db "Incorrect number of sectors read", 0
+    mov bx, SECTORS_ERROR
+    call print
+    jmp $

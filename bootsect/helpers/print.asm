@@ -1,16 +1,14 @@
 [bits 16]
-rm_print:
-    ; Saving the contents of the registers.
+print:
     pusha
 
-rm_print_body:
+print_body:
     ; Moving the current char into the printing register.
     mov al, [bx]
 
-    ; Ending the function if we have reached the null byte terminating the 
-    ; string.
+    ; Ending the function if we have reached the null byte terminating the string.
     cmp al, 0
-    je rm_print_done
+    je print_done
 
     ; Printing the contents of `al`.
     mov ah, 0x0e
@@ -18,17 +16,17 @@ rm_print_body:
 
     ; Incrementing the pointer and looping.
     add bx, 1
-    jmp rm_print_body
+    jmp print_body
 
-rm_print_done:
+print_done:
+    ; Printing a new-line character.
     mov al, 0x0a
     mov ah, 0x0e
     int 0x10
-
     mov al, 0x0d
     mov ah, 0x0e
     int 0x10
 
-    ; Restoring the contents of the registers.
+    ; Returning.
     popa
     ret
