@@ -21,6 +21,14 @@ rm_print_body:
     jmp rm_print_body
 
 rm_print_done:
+    mov al, 0x0a
+    mov ah, 0x0e
+    int 0x10
+
+    mov al, 0x0d
+    mov ah, 0x0e
+    int 0x10
+
     ; Restoring the contents of the registers.
     popa
     ret
