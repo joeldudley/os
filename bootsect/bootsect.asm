@@ -29,12 +29,12 @@ PROT_MODE_MSG:
 KERNEL_OFFSET equ 0x1000
 BOOT_DRIVE db 0                         ; Storing the boot drive's address (? is that right) in case it's overwritten.
 
-%include "gdt.asm"                      ; If the `include` directives come before 
-%include "enter_prot_mode.asm"          ; the infinite loop, their code will be 
-%include "rm_print.asm"                 ; run as they are included.
-%include "pm_print.asm"                 ;   "
-%include "load_from_disk.asm"           ;   "
-%include "load_kernel.asm"              ;   "
+%include "bootsect/gdt.asm"             ; If the `include` directives come before 
+%include "bootsect/enter_prot_mode.asm" ; the infinite loop, their code will be 
+%include "bootsect/rm_print.asm"        ; run as they are included.
+%include "bootsect/pm_print.asm"        ;   "
+%include "bootsect/load_from_disk.asm"  ;   "
+%include "bootsect/load_kernel.asm"     ;   "
 
 times 510 - ($ - $$) db 0               ; Padding the rest of the boot sector.
 dw 0xaa55                               ; Magic word identifying the sector as a boot sector.
