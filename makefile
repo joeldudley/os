@@ -1,20 +1,25 @@
 # On OSX, this makefile requires a GCC cross-compiler - see http://wiki.osdev.org/GCC_Cross-Compiler.
 
-run: build/os-image.bin
+run: build build/os-image.bin
 	# Run the image.
 	qemu-system-i386 -fda build/os-image.bin
 
-debug: build/os-image.bin build/kernel.elf
+debug: build build/os-image.bin build/kernel.elf
 	# Run the image with a debugger.
 	qemu-system-i386 -s -fda build/os-image.bin &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
-# The targets below should not be invoked directly.
-
-build/os-image.bin: build/kernel.bin build/bootsect.bin
+build:
 	# Create a temporary build directory.
 	mkdir -p build
 
+clean:
+	rm build/*
+	rmdir build
+
+# The targets below should not be invoked directly.
+
+build/os-image.bin: build/kernel.bin build/bootsect.bin
 	cat build/bootsect.bin build/kernel.bin > build/os-image.bin
 
 build/kernel.bin: build/entry_point.o build/kernel.o
