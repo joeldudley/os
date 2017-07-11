@@ -5,9 +5,9 @@ run: build build/os-image.bin
 	qemu-system-i386 -fda build/os-image.bin
 
 debug: build build/os-image.bin build/kernel.elf
-	# Run the image with a debugger.
+	# Run the image with a debugger using the `-s` flag.
 	qemu-system-i386 -s -fda build/os-image.bin &
-	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
+	/usr/local/i386elfgcc/bin/i386-elf-gdb -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 build:
 	# Create a temporary build directory.
