@@ -1,42 +1,39 @@
 # On OSX, this makefile requires a GCC cross-compiler - see http://wiki.osdev.org/GCC_Cross-Compiler.
 
-run: clean build/os-image.bin
-	# Run the image.
-	qemu-system-i386 -fda build/os-image.bin
+# `$@` refers to the output file
+# `$^` refers to the input file(s)
 
-debug: clean build/os-image.bin build/kernel.elf
+run: clean os-image.bin
+	# Run the image.
+	qemu-system-i386 -fda os-image.bin
+
+debug: clean os-image.bin kernel.elf
 	# Run the image with a debugger using the `-s` flag.
-	qemu-system-i386 -s -fda build/os-image.bin &
-	/usr/local/i386elfgcc/bin/i386-elf-gdb -ex "target remote localhost:1234" -ex "symbol-file build/kernel.elf"
+	qemu-system-i386 -s -fda os-image.bin &
+	/usr/local/i386elfgcc/bin/i386-elf-gdb -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 clean:
-	# Create a new build directory.
-	mkdir -p build
-
 	# Delete existing build files.
-	rm -rf build/*
+	rm -f *.bin *.o *.elf
 
 # The targets below should not be invoked directly.
 
-build/os-image.bin: build/kernel.bin build/bootsect.bin
-	cat build/bootsect.bin build/kernel.bin > build/os-image.bin
+os-image.bin: bootsect.bin kernel.bin
+	cat $^ > $@
 
-build/kernel.bin: build/call_kernel.o build/kernel.o build/ports.o
-	i386-elf-ld -o build/kernel.bin -Ttext 0x1000 build/call_kernel.o build/kernel.o build/ports.o --oformat binary
+kernel.bin: call_kernel.o kernel.o ports.o
+	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
 
-build/bootsect.bin:
-	nasm bootsect/main.asm -f bin -o build/bootsect.bin
+%.o: bootsect/%.asm
+	nasm $< -f elf -o $@
 
-build/call_kernel.o:
-	nasm bootsect/call_kernel.asm -f elf -o build/call_kernel.o
+%.bin: bootsect/%.asm
+	nasm $< -f bin -o $@
 
-build/kernel.o:
+%.o: kernel/%.c
 	# Compile with debug information using the `-g` flag.
-	i386-elf-gcc -g -ffreestanding -c kernel/main.c -o build/kernel.o
-
-build/ports.o:
-	i386-elf-gcc -g -ffreestanding -c kernel/ports.c -o build/ports.o
+	i386-elf-gcc -g -ffreestanding -c $^ -o $@
 
 # For debugging.
-build/kernel.elf: build/call_kernel.o build/kernel.o build/ports.o
-	i386-elf-ld -o build/kernel.elf -Ttext 0x1000 build/call_kernel.o build/kernel.o build/ports.o
+kernel.elf: call_kernel.o kernel.o ports.o
+	i386-elf-ld -o $@ -Ttext 0x1000 $^
