@@ -1,14 +1,14 @@
 [bits 16]
-print:              ; Prints the string starting at the address stored in `bx`.
+print:              ; Prints the string starting at `bx`.
     pusha
 
 print_body:         ; Prints each char of the string.
-    mov al, [bx]    ; Moves the string's next char into register `al`.
+    mov al, [bx]    ; Sets `al` to the string's next char.
 
     cmp al, 0       ; Ends the function if we have reached the null byte terminating the string.
     je print_done   ;   "
 
-    mov ah, 0x0e    ; Sets BIOS interrupt 0x13 (video services) to 0x0e ('teletype output').
+    mov ah, 0x0e    ; Sets BIOS interrupt 0x10 (video services) to 0x0e ('teletype output').
     int 0x10        ; Calls BIOS interrupt 0x10, printing the char in `al` to screen.
 
     add bx, 1       ; Increments the char pointer and loops.
