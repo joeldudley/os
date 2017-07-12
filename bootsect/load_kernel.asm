@@ -1,5 +1,5 @@
 [bits 16]
-load_kernel: ; Reads 16 sectors from the boot drive and stores it at the kernel address.
+load_kernel:                ; Reads sectors 1-17 (our kernel) from the disk and stores them in memory.
     mov bx, KERNEL_ADDRESS
     mov dh, 16
     mov dl, [BOOT_DRIVE]

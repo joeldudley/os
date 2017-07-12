@@ -1,6 +1,5 @@
 [bits 16]
-disk_load:          ; Loads 'dh' sectors from medium `dl` into `es:bx`.
-                    ; Where for `dl`, 0 = floppy, 1 = floppy2, 0x80 = hdd, and 0x81 = hdd2.
+disk_load:          ; Loads 'dh' sectors (starting at sector 2) from the disk of type `dl` into `es:bx`.
     pusha
     push dx         ; This function will also overwrite 'dx'.
 

@@ -4,7 +4,7 @@
 # `$^` refers to the input file(s)
 
 run: clean os-image.bin
-	# Run the image.
+	# Run the image as a floppy using the `-fda` flag.
 	qemu-system-i386 -fda os-image.bin
 
 debug: clean os-image.bin kernel.elf
