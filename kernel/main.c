@@ -24,7 +24,7 @@ void main() {
     // find the VGA cell's location.
     int offset_from_vga = cursor_pos * 2;
 
-    // Writing 'X' to the current cursor position.
+    // We write 'X' to the current cursor position.
     char *vga = 0xb8000;
     vga[offset_from_vga] = 'X';
     // White text on a black background.
