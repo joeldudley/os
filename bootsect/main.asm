@@ -6,7 +6,7 @@ mov sp, bp                  ;   "
 
 call load_kernel            ; Loads the kernel.
 call enter_prot_mode        ; Enters protected mode.
-after_entering_prot_mode    ; `enter_prot_mode` returns here.
+after_entering_prot_mode:   ; `enter_prot_mode` returns here.
 
 [bits 32]
 call KERNEL_ADDRESS         ; Jumps to where the kernel is loaded.

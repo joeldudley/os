@@ -5,7 +5,7 @@ enter_prot_mode:                    ; Switches to protected mode.
     mov eax, cr0                    ; Set the first bit of cr0.
     or eax, 0x1                     ;   "
     mov cr0, eax                    ;   "
-    call CODE_SEG:init_prot_mode    ; A far-jump flushing the CPU pipeline and initialising protected mode.
+    jmp CODE_SEG:init_prot_mode    ; A far-jump flushing the CPU pipeline and initialising protected mode.
 
 [bits 32]
 init_prot_mode:

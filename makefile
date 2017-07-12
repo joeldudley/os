@@ -21,14 +21,14 @@ clean:
 build/os-image.bin: build/kernel.bin build/bootsect.bin
 	cat build/bootsect.bin build/kernel.bin > build/os-image.bin
 
-build/kernel.bin: build/entry_point.o build/kernel.o build/ports.o
-	i386-elf-ld -o build/kernel.bin -Ttext 0x1000 build/entry_point.o build/kernel.o build/ports.o --oformat binary
+build/kernel.bin: build/call_kernel.o build/kernel.o build/ports.o
+	i386-elf-ld -o build/kernel.bin -Ttext 0x1000 build/call_kernel.o build/kernel.o build/ports.o --oformat binary
 
 build/bootsect.bin:
 	nasm bootsect/main.asm -f bin -o build/bootsect.bin
 
-build/entry_point.o:
-	nasm kernel/entry_point.asm -f elf -o build/entry_point.o
+build/call_kernel.o:
+	nasm bootsect/call_kernel.asm -f elf -o build/call_kernel.o
 
 build/kernel.o:
 	# Compile with debug information using the `-g` flag.
@@ -38,5 +38,5 @@ build/ports.o:
 	i386-elf-gcc -g -ffreestanding -c kernel/ports.c -o build/ports.o
 
 # For debugging.
-build/kernel.elf: build/entry_point.o build/kernel.o build/ports.o
-	i386-elf-ld -o build/kernel.elf -Ttext 0x1000 build/entry_point.o build/kernel.o build/ports.o
+build/kernel.elf: build/call_kernel.o build/kernel.o build/ports.o
+	i386-elf-ld -o build/kernel.elf -Ttext 0x1000 build/call_kernel.o build/kernel.o build/ports.o
