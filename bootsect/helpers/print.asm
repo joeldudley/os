@@ -1,6 +1,5 @@
 [bits 16]
-; WHAT IS BX?
-print:
+print:              ; Prints the string starting at the address stored in `bx`.
     pusha
 
 print_body:         ; Prints each char of the string.
