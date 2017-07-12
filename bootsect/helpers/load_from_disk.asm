@@ -19,13 +19,13 @@ disk_load:          ; Loads 'dh' sectors from medium `dl` into `es:bx`.
     popa
     ret
 
-disk_error:
+disk_err:
     DISK_ERROR: db "Disk read error", 0
     mov bx, DISK_ERROR
     call print
     jmp $
 
-sectors_error:
+sectors_err:
     SECTORS_ERROR: db "Incorrect number of sectors read", 0
     mov bx, SECTORS_ERROR
     call print
