@@ -1,22 +1,22 @@
 [org 0x7c00]                ; Origin address at which NASM assumes the program begins.
-mov [BOOT_DRIVE], dl        ; Storing the boot drive's address in case it's overwritten.
+mov [BOOT_DRIVE], dl        ; Stores the boot drive's address in case it's overwritten.
 
-mov bp, 0x9000              ; Initialising the stack.
+mov bp, 0x9000              ; Initialises the stack.
 mov sp, bp                  ;   "
 
-call load_kernel            ; Loading the kernel.
-call enter_prot_mode        ; Entering protected mode.
-after_entering_prot_mode    ; `enter_prot_mode` returns to here.
+call load_kernel            ; Loads the kernel.
+call enter_prot_mode        ; Enters protected mode.
+after_entering_prot_mode    ; `enter_prot_mode` returns here.
 
 [bits 32]
-call KERNEL_ADDRESS         ; Jump to where the kernel is loaded.
+call KERNEL_ADDRESS         ; Jumps to where the kernel is loaded.
 
 ; CONSTANTS
-BOOT_DRIVE db 0             ; Used when loading the kernel.
-KERNEL_ADDRESS equ 0x1000   ; Used when loading and entering the kernel.
+BOOT_DRIVE db 0             ; The boot's drive address (updated above).
+KERNEL_ADDRESS equ 0x1000   ; The address where the kernel is loaded.
 
 ; INCLUDES
-; We put `include` directives at the end so they aren't run until required.
+; Put `include` directives at the end so they aren't run until required.
 %include "bootsect/gdt.asm"
 %include "bootsect/enter_prot_mode.asm"
 %include "bootsect/helpers/print.asm"
@@ -24,5 +24,5 @@ KERNEL_ADDRESS equ 0x1000   ; Used when loading and entering the kernel.
 %include "bootsect/load_kernel.asm"
 
 ; PADDING
-times 510 - ($ - $$) db 0   ; Padding the rest of the boot sector.
+times 510 - ($ - $$) db 0   ; Pads the rest of the boot sector.
 dw 0xaa55                   ; Magic word identifying the sector as a boot sector.

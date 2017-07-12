@@ -1,29 +1,25 @@
 [bits 16]
+; WHAT IS BX?
 print:
     pusha
 
-print_body:
-    ; Moving the current char into the printing register.
-    mov al, [bx]
+print_body:         ; Prints each char of the string.
+    mov al, [bx]    ; Moves the string's next char into register `al`.
 
-    ; Ending the function if we have reached the null byte terminating the string.
-    cmp al, 0
-    je print_done
+    cmp al, 0       ; Ends the function if we have reached the null byte terminating the string.
+    je print_done   ;   "
 
-    ; Printing the contents of `al`.
-    mov ah, 0x0e
+    mov ah, 0x0e    ; Sets BIOS interrupt 0x13 (video services) to 0x0e ('teletype output').
+    int 0x10        ; Calls BIOS interrupt 0x10, printing the char in `al` to screen.
+
+    add bx, 1       ; Increments the char pointer and loops.
+    jmp print_body  ;   "
+
+print_done:         ; Prints a new line.
+    mov al, 0x0a    ; The new-line char.
+    mov ah, 0x0e  
     int 0x10
-
-    ; Incrementing the pointer and looping.
-    add bx, 1
-    jmp print_body
-
-print_done:
-    ; Printing a new-line character.
-    mov al, 0x0a
-    mov ah, 0x0e
-    int 0x10
-    mov al, 0x0d
+    mov al, 0x0d    ; The carriage return char.
     mov ah, 0x0e
     int 0x10
 

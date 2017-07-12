@@ -1,15 +1,11 @@
 [bits 16]
-; load 'dh' sectors from drive 'dl' into ES:BX
-disk_load:
+disk_load:          ; Loads 'dh' sectors from drive 'dl' into ES:BX.
     pusha
-    ; reading from disk requires setting specific values in all registers
-    ; so we will overwrite our input parameters from 'dx'. Let's save it
-    ; to the stack for later use.
-    push dx
+    push dx         ; This function will also overwrite 'dx'.
 
-    mov ah, 0x02 ; ah <- int 0x13 function. 0x02 = 'read'
-    mov al, dh   ; al <- number of sectors to read (0x01 .. 0x80)
-    mov cl, 0x02 ; cl <- sector (0x01 .. 0x11)
+    mov ah, 0x02    ; Sets BIOS interrupt 0x13 (disk read/write) to 0x02 ('read').
+    mov al, dh      ; al <- number of sectors to read (0x01 .. 0x80)
+    mov cl, 0x02    ; cl <- sector (0x01 .. 0x11)
                  ; 0x01 is our boot sector, 0x02 is the first 'available' sector
     mov ch, 0x00 ; ch <- cylinder (0x0 .. 0x3FF, upper 2 bits in 'cl')
     ; dl <- drive number. Our caller sets it as a parameter and gets it from BIOS
