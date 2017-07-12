@@ -32,6 +32,7 @@ build/entry_point.o:
 	nasm kernel/entry_point.asm -f elf -o build/entry_point.o
 
 build/kernel.o:
+	# Compile with debug information using the `-g` flag.
 	i386-elf-gcc -g -ffreestanding -c kernel/main.c -o build/kernel.o
 
 build/ports.o:
