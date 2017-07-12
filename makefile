@@ -1,21 +1,20 @@
 # On OSX, this makefile requires a GCC cross-compiler - see http://wiki.osdev.org/GCC_Cross-Compiler.
 
-run: clean_build build/os-image.bin
+run: build build/os-image.bin
 	# Run the image.
 	qemu-system-i386 -fda build/os-image.bin
 
-debug: clean_build build/os-image.bin build/kernel.elf
+debug: build build/os-image.bin build/kernel.elf
 	# Run the image with a debugger using the `-s` flag.
 	qemu-system-i386 -s -fda build/os-image.bin &
 	/usr/local/i386elfgcc/bin/i386-elf-gdb -ex "target remote localhost:1234" -ex "symbol-file build/kernel.elf"
 
-clean_build:
-	# Delete existing build files.
-	rm build/*
-	rmdir build
-
+build:
 	# Create a new build directory.
 	mkdir -p build
+
+	# Delete existing build files.
+	rm -f build/*
 
 # The targets below should not be invoked directly.
 
