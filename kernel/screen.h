@@ -9,7 +9,7 @@
 #define WHITE_ON_BLACK 0x0f
 #define RED_ON_WHITE 0xf4
 
-/* Screen i/o ports */
+/* Screen I/O ports */
 #define VGA_CTRL_REGISTER 0x3d4
 #define VGA_DATA_REGISTER 0x3d5
 
