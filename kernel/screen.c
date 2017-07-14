@@ -46,15 +46,13 @@ void print_string(char *string, int col, int row) {
  * If attr == null, prints white on black.
  */
 int print_char(char c, int col, int row, char attr) {
-    int max_location = 2 * (MAX_COLS) * (MAX_ROWS);
-
     char *vid_mem = VIDEO_ADDRESS;
     if (!attr) attr = WHITE_ON_BLACK;
 
     // Error control: print a red 'E' if the coords aren't right.
     if (col >= MAX_COLS || row >= MAX_ROWS) {
-        vid_mem[max_location - 2] = 'E';
-        vid_mem[max_location - 1] = RED_ON_WHITE;
+        vid_mem[MAX_LOC - 2] = 'E';
+        vid_mem[MAX_LOC - 1] = RED_ON_WHITE;
         return coords_to_loc(col, row);
     }
 
@@ -75,7 +73,7 @@ int print_char(char c, int col, int row, char attr) {
     }
 
     // Scroll if the location exceeds the screen size.
-    if (location >= max_location) {
+    if (location >= MAX_LOC) {
         // We eliminate the first row by copying every row into the row above.
         for (int i = 1; i < MAX_ROWS; i++) 
             char_array_copy(
@@ -88,7 +86,7 @@ int print_char(char c, int col, int row, char attr) {
         for (int i = 0; i < MAX_COLS * 2; i++)
             last_line[i] = 0;
 
-        // We move the cursor back onto this newly-blank line.
+        // We move the cursor up onto the newly-blank line.
         location -= 2 * MAX_COLS;
     }
 

@@ -15,6 +15,6 @@ void main() {
         print_string(str, 0, i);
     }
 
-    print_string("This text forces the kernel to scroll. R\now 0 will disappear. ", 60, 24);
+    print_string("This text forces the kernel to scroll. Row 0 will disappear. ", 60, 24);
     print_string("And with this text, the kernel will scroll again, and row 1 will disappear too!", -1, -1);
 }

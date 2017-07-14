@@ -2,6 +2,7 @@
 #define MAX_ROWS 25
 #define MAX_COLS 80
 #define SCREEN_SIZE (MAX_COLS * MAX_ROWS)
+#define MAX_LOC (2 * SCREEN_SIZE)
 #define WHITE_ON_BLACK 0x0f
 #define RED_ON_WHITE 0xf4
 
