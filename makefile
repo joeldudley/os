@@ -23,7 +23,7 @@ clean:
 build/os-image.bin: build/bootsect.bin build/kernel.bin
 	cat $^ > $@
 
-build/kernel.bin: build/call_kernel.o build/kernel.o build/ports.o
+build/kernel.bin: build/call_kernel.o build/kernel.o build/ports.o build/screen.o
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
 
 build/%.o: bootsect/%.asm
