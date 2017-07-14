@@ -6,8 +6,8 @@ int get_cursor_loc();
 void set_cursor_loc(int location);
 int print_char(char c, int col, int row, char attr);
 int coords_to_loc(int col, int row);
-int get_loc_row(int location);
 int get_loc_col(int location);
+int get_loc_row(int location);
 
 /**********************************************************
  * Public Kernel API functions                            *
@@ -115,10 +115,10 @@ int get_cursor_loc() {
 void set_cursor_loc(int location) {
     // Each character cell is 2 wide.
     location /= 2;
-    // Request the high byte.
+    // Write the high byte.
     port_write_byte(VGA_CTRL_REGISTER, 14);
     port_write_byte(VGA_DATA_REGISTER, (unsigned char) (location >> 8));
-    // Request the low byte.
+    // Write the low byte.
     port_write_byte(VGA_CTRL_REGISTER, 15);
     port_write_byte(VGA_DATA_REGISTER, (unsigned char) (location & 0xff));
 }
@@ -139,6 +139,24 @@ void clear_screen() {
     set_cursor_loc(coords_to_loc(0, 0));
 }
 
-int coords_to_loc(int col, int row) { return 2 * (row * MAX_COLS + col); }
-int get_loc_row(int location) { return location / (2 * MAX_COLS); }
-int get_loc_col(int location) { return (location - (get_loc_row(location) * 2 * MAX_COLS)) / 2; }
+/**
+ * Converts a col & row to the corresponding int representation.
+ * This is how the BIOS represents the cursor's location.
+ */
+int coords_to_loc(int col, int row) { 
+    return 2 * (row * MAX_COLS + col); 
+}
+
+/**
+ * Extracts the col from a location's int representation.
+ */
+int get_loc_col(int location) { 
+    return (location - (get_loc_row(location) * 2 * MAX_COLS)) / 2; 
+}
+
+/**
+ * Extracts the row from a location's int representation.
+ */
+int get_loc_row(int location) { 
+    return location / (2 * MAX_COLS); 
+}
