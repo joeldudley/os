@@ -5,9 +5,9 @@
 int get_cursor_loc();
 void set_cursor_loc(int location);
 int print_char(char c, int col, int row, char attr);
-int get_loc_from_coords(int col, int row);
-int get_row_from_loc(int location);
-int get_col_from_loc(int location);
+int coords_to_loc(int col, int row);
+int get_loc_row(int location);
+int get_loc_col(int location);
 
 /**********************************************************
  * Public Kernel API functions                            *
@@ -20,7 +20,7 @@ int get_col_from_loc(int location);
 void print_string(char *string, int col, int row) {
     int location;
     if (col >= 0 && row >= 0)
-        location = get_loc_from_coords(col, row);
+        location = coords_to_loc(col, row);
     else 
         // Use current cursor location if col/row are negative.
         location = get_cursor_loc();
@@ -28,8 +28,8 @@ void print_string(char *string, int col, int row) {
     // Loop through the string and print it.
     int i = 0;
     while (string[i] != 0) {
-        col = get_col_from_loc(location);
-        row = get_row_from_loc(location);
+        col = get_loc_col(location);
+        row = get_loc_row(location);
         // Update the location on each iteration.
         location = print_char(string[i++], col, row, WHITE_ON_BLACK);
     }
@@ -46,36 +46,54 @@ void print_string(char *string, int col, int row) {
  * If attr == null, prints white on black.
  */
 int print_char(char c, int col, int row, char attr) {
+    int max_location = 2 * (MAX_COLS) * (MAX_ROWS);
+
     char *vid_mem = VIDEO_ADDRESS;
     if (!attr) attr = WHITE_ON_BLACK;
 
     // Error control: print a red 'E' if the coords aren't right.
     if (col >= MAX_COLS || row >= MAX_ROWS) {
-        int max_location = 2 * (MAX_COLS) * (MAX_ROWS);
         vid_mem[max_location - 2] = 'E';
         vid_mem[max_location - 1] = RED_ON_WHITE;
-        return get_loc_from_coords(col, row);
+        return coords_to_loc(col, row);
     }
 
     int location;
     if (col >= 0 && row >= 0)
-        location = get_loc_from_coords(col, row);
-    else 
-        // Use current cursor location if col/row are negative.
-        location = get_cursor_loc();
+        location = coords_to_loc(col, row);
+    // Use current cursor location if col/row are negative.
+    else location = get_cursor_loc();
 
     // If the char is a new-line, print nothing. 
     if (c == '\n') {
-        row = get_row_from_loc(location);
-        location = get_loc_from_coords(0, row + 1);
+        row = get_loc_row(location);
+        location = coords_to_loc(0, row + 1);
     } else {
         vid_mem[location] = c;
         vid_mem[location + 1] = attr;
         location += 2;
     }
 
-    set_cursor_loc(location);
+    // Scroll if the location exceeds the screen size.
+    if (location >= max_location) {
+        // We eliminate the first row by copying every row into the row above.
+        for (int i = 1; i < MAX_ROWS; i++) 
+            char_array_copy(
+                VIDEO_ADDRESS + coords_to_loc(0, i),
+                VIDEO_ADDRESS + coords_to_loc(0, i - 1),
+                MAX_COLS * 2);
 
+        // We erase the last line.
+        char *last_line = VIDEO_ADDRESS + coords_to_loc(0, MAX_ROWS - 1);
+        for (int i = 0; i < MAX_COLS * 2; i++)
+            last_line[i] = 0;
+
+        // We move the cursor back onto this newly-blank line.
+        location -= 2 * MAX_COLS;
+    }
+
+    set_cursor_loc(location);
+    
     return location;
 }
 
@@ -120,9 +138,9 @@ void clear_screen() {
     }
 
     // We reset the cursor to the start of the screen.
-    set_cursor_loc(get_loc_from_coords(0, 0));
+    set_cursor_loc(coords_to_loc(0, 0));
 }
 
-int get_loc_from_coords(int col, int row) { return 2 * (row * MAX_COLS + col); }
-int get_row_from_loc(int location) { return location / (2 * MAX_COLS); }
-int get_col_from_loc(int location) { return (location - (get_row_from_loc(location) * 2 * MAX_COLS)) / 2; }
+int coords_to_loc(int col, int row) { return 2 * (row * MAX_COLS + col); }
+int get_loc_row(int location) { return location / (2 * MAX_COLS); }
+int get_loc_col(int location) { return (location - (get_loc_row(location) * 2 * MAX_COLS)) / 2; }
