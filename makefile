@@ -4,13 +4,12 @@
 # `$^` refers to the input file(s)
 
 run: clean build/os-image.bin
-	# Run the image as a floppy using the `-fda` flag.
-	qemu-system-i386 -fda build/os-image.bin
+	qemu-system-i386 -drive format=raw,file=build/os-image.bin,index=0,if=floppy
 
-debug: clean os-image.bin kernel.elf
-	# Run the image with a debugger using the `-s` flag.
-	qemu-system-i386 -s -fda os-image.bin &
-	/usr/local/i386elfgcc/bin/i386-elf-gdb -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
+# Run the image with a debugger using the `-s` flag.
+debug: clean build/os-image.bin build/kernel.elf
+	qemu-system-i386 -s -drive format=raw,file=build/os-image.bin,index=0,if=floppy &
+	/usr/local/i386elfgcc/bin/i386-elf-gdb -ex "target remote localhost:1234" -ex "symbol-file build/kernel.elf"
 
 clean:
 	mkdir -p build
@@ -32,10 +31,10 @@ build/%.o: bootsect/%.asm
 build/%.bin: bootsect/%.asm
 	nasm $< -f bin -o $@
 
+# Compile with debug information using the `-g` flag.
 build/%.o: kernel/%.c
-	# Compile with debug information using the `-g` flag.
 	i386-elf-gcc -g -ffreestanding -c $^ -o $@
 
 # For debugging.
-kernel.elf: call_kernel.o kernel.o ports.o
+build/kernel.elf: build/call_kernel.o build/kernel.o build/ports.o build/screen.o build/util.o
 	i386-elf-ld -o $@ -Ttext 0x1000 $^

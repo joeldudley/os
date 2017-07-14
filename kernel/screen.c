@@ -1,5 +1,6 @@
 #include "screen.h"
 #include "ports.h"
+#include "util.h"
 
 /* Declaration of private functions */
 int get_cursor_loc();

@@ -1,10 +1,22 @@
-; At boot, the BIOS loads our boot code from the first sector of the boot 
-; medium into the memory space starting at 0x7c00. The boot medium's type is 
-; stored in `dl`.
+; At start-up, the BIOS:
+; * Searches for a boot sector on the bootable devices
+;   * A boot sector is identified by its magic number
+; * Loads the bootloader from the boot sector into memory at 0x7c00
+; * Transfers execution to the bootloader
+;   * Initially, the bootloader is executing in real mode
+
+; The bootloader must then:
+; * Find and load the kernel into memory
+; * Enable protected mode
+; * Prepare the kernel's runtime environment
+
+; Unless the bootloader fits entirely in the boot sector, we'll need a 
+; two-stage loader.
 
 [org 0x7c00]                ; Sets 0x7c00 as the default offset.
 
-mov [BOOT_DRIVE], dl        ; Stores the boot medium's type for later.
+mov [BOOT_DRIVE], dl        ; The boot device's type is stored in `dl`.
+                            ; We store this information for later use.
 
 mov bp, 0x9000              ; Initialises the stack.
 mov sp, bp                  ;   "
