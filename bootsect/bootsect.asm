@@ -1,24 +1,27 @@
-[org 0x7c00]                ; The BIOS loads our boot code from the first sector of the disk.
-                            ; It loads it at address 0x7c00, so we use this as the default offset.
+; At boot, the BIOS loads our boot code from the first sector of the boot 
+; medium into the memory space starting at 0x7c00. The boot medium's type is 
+; stored in `dl`.
 
-mov [BOOT_DRIVE], dl        ; At start-up, `dl` holds the boot medium's type. We store this for later.
+[org 0x7c00]                ; Sets 0x7c00 as the default offset.
+
+mov [BOOT_DRIVE], dl        ; Stores the boot medium's type for later.
 
 mov bp, 0x9000              ; Initialises the stack.
 mov sp, bp                  ;   "
 
 call load_kernel            ; Loads the kernel from disk into memory.
-call enter_prot_mode        ; Enters protected mode.
-after_entering_prot_mode:   ; `enter_prot_mode` returns here.
+jmp enter_prot_mode         ; Enters protected mode.
 
 [bits 32]
-call KERNEL_ADDRESS         ; Jumps to where the kernel is loaded.
+after_entering_prot_mode:   ; `enter_prot_mode` returns here.
+    jmp KERNEL_ADDRESS      ; Jumps to where `call_kernel` is loaded.
 
 ; CONSTANTS
 BOOT_DRIVE db 0             ; The boot's drive address (assigned above).
 KERNEL_ADDRESS equ 0x1000   ; The address where the kernel is loaded.
 
 ; INCLUDES
-; Put `include` directives at the end so they aren't run until required.
+; `include` directives are placed here so that they aren't run until required.
 %include "bootsect/gdt.asm"
 %include "bootsect/enter_prot_mode.asm"
 %include "bootsect/helpers/print.asm"
@@ -27,4 +30,4 @@ KERNEL_ADDRESS equ 0x1000   ; The address where the kernel is loaded.
 
 ; PADDING
 times 510 - ($ - $$) db 0   ; Pads the rest of the boot sector.
-dw 0xaa55                   ; Magic word identifying the sector as a boot sector.
+dw 0xaa55                   ; Magic word identifying a boot sector.
