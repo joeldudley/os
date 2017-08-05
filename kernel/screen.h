@@ -9,15 +9,18 @@
 #define WHITE_ON_BLACK 0x0f
 #define RED_ON_WHITE 0xf4
 
-/* Screen I/O ports */
-#define VGA_CTRL_REGISTER 0x3d4
-#define VGA_DATA_REGISTER 0x3d5
+/* Screen I/O ports.
+The VGA controller is split into two registers:
+  * A data register which contains the data.
+  * An index register indicating the type of the data in the VGA data register. */
+#define VGA_IDX_PORT 0x3d4
+#define VGA_DATA_PORT 0x3d5
 
-/* Cursor offset registers */
-#define CURSOR_OFFSET_REGISTER_H 14
-#define CURSOR_OFFSET_REGISTER_L 15
+/* Cursor location offsets in the VGA index register. */
+#define CURSOR_LOCATION_REGISTER_H 14
+#define CURSOR_LOCATION_REGISTER_L 15
 
-/* Public kernel API */
+/* Public kernel API. */
 void clear_screen();
 void print_string(char *message, int col, int row);
 

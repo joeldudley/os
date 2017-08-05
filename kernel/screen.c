@@ -101,11 +101,11 @@ int print_char(char c, int col, int row, char attr) {
  */
 int get_cursor_loc() {
     // Request the high byte of the cursor's location.
-    port_write_byte(VGA_CTRL_REGISTER, CURSOR_OFFSET_REGISTER_H);
-    int current_cell = port_read_byte(VGA_DATA_REGISTER) << 8;
+    port_write_byte(VGA_IDX_PORT, CURSOR_LOCATION_REGISTER_H);
+    int current_cell = port_read_byte(VGA_DATA_PORT) << 8;
     // Request the low byte of the cursor's location.
-    port_write_byte(VGA_CTRL_REGISTER, CURSOR_OFFSET_REGISTER_L);
-    current_cell += port_read_byte(VGA_DATA_REGISTER);
+    port_write_byte(VGA_IDX_PORT, CURSOR_LOCATION_REGISTER_L);
+    current_cell += port_read_byte(VGA_DATA_PORT);
     // Each character cell is 2 bytes wide.
     return current_cell * 2;
 }
@@ -117,11 +117,11 @@ void set_cursor_loc(int location) {
     // Each character cell is 2 bytes wide.
     location /= 2;
     // Write the high byte of the cursor's location.
-    port_write_byte(VGA_CTRL_REGISTER, CURSOR_OFFSET_REGISTER_H);
-    port_write_byte(VGA_DATA_REGISTER, (u8) (location >> 8));
+    port_write_byte(VGA_IDX_PORT, CURSOR_LOCATION_REGISTER_H);
+    port_write_byte(VGA_DATA_PORT, (u8) (location >> 8));
     // Write the low byte of the cursor's location.
-    port_write_byte(VGA_CTRL_REGISTER, CURSOR_OFFSET_REGISTER_L);
-    port_write_byte(VGA_DATA_REGISTER, (u8) (location & 0xff));
+    port_write_byte(VGA_IDX_PORT, CURSOR_LOCATION_REGISTER_L);
+    port_write_byte(VGA_DATA_PORT, (u8) (location & 0xff));
 }
 
 /**
