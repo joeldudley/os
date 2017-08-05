@@ -1,6 +1,6 @@
 ; At start-up, the BIOS:
 ; * Searches for a boot sector on the bootable devices
-;   * A boot sector is one ending with a magic number
+;   * A boot sector is one ending with a magic word
 ; * Loads the bootloader from the boot sector into memory at 0x7c00
 ; * Transfers execution to the bootloader
 
@@ -19,11 +19,11 @@
 [org 0x7c00]                ; Sets the default offset to 0x7c00, as this is   
                             ; the address at which the bootsector is loaded.
 
-mov [BOOT_TYPE], dl         ; The boot device's type is stored in `dl`.
-                            ; We store this information for later use.
+mov [BOOT_TYPE], dl         ; At start-up, the boot device's type is stored in 
+                            ; `dl`. We store this information for later use.
 
-mov bp, 0x9000              ; Sets the base of the stack.
-mov sp, bp                  ; Sets the stack pointer.
+mov bp, STACK_BASE          ; Sets the base of the real-mode stack.
+mov sp, bp                  ; Sets the real-mode stack pointer.
 
 call load_kernel            ; Loads the kernel from disk into memory.
 jmp enter_prot_mode         ; Enters protected mode.
@@ -35,7 +35,10 @@ jmp KERNEL_ADDRESS          ; Jumps to where the kernel was loaded.
 
 ; CONSTANTS
 BOOT_TYPE db 0              ; The boot's drive address (overwritten above).
-KERNEL_ADDRESS equ 0x1000   ; The address where the kernel is loaded.
+STACK_BASE equ 0x9000       ; The base of the real-mode stack.
+KERNEL_ADDRESS equ 0x1000   ; The address at which the kernel is loaded.
+SECTOR_SIZE equ 510         ; The size of a sector excluding the magic word.
+MAGIC_WORD equ 0xaa55       ; The magic word identifying a bootsector.
 
 ; INCLUDES
 ; We include the files at the end so that they aren't run unless jumped to.
@@ -46,5 +49,5 @@ KERNEL_ADDRESS equ 0x1000   ; The address where the kernel is loaded.
 %include "bootsector/load_kernel.asm"
 
 ; PADDING
-times 510 - ($ - $$) db 0   ; Pads the rest of the boot sector.
-dw 0xaa55                   ; Magic word identifying a boot sector.
+times SECTOR_SIZE - ($ - $$) db 0   ; Pads the rest of the bootsector.
+dw MAGIC_WORD                       ; A bootsector must end with the magic word.
