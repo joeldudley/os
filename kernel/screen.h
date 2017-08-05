@@ -13,6 +13,10 @@
 #define VGA_CTRL_REGISTER 0x3d4
 #define VGA_DATA_REGISTER 0x3d5
 
+/* Cursor offset registers */
+#define CURSOR_OFFSET_REGISTER_H 14
+#define CURSOR_OFFSET_REGISTER_L 15
+
 /* Public kernel API */
 void clear_screen();
 void print_string(char *message, int col, int row);

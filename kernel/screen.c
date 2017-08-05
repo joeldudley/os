@@ -11,7 +11,7 @@ int get_loc_col(int location);
 int get_loc_row(int location);
 
 /**********************************************************
- * Public Kernel API functions                            *
+ * Kernel API                                             *
  **********************************************************/
 
 /**
@@ -101,10 +101,10 @@ int print_char(char c, int col, int row, char attr) {
  */
 int get_cursor_loc() {
     // Request the high byte.
-    port_write_byte(VGA_CTRL_REGISTER, 14);
+    port_write_byte(VGA_CTRL_REGISTER, CURSOR_OFFSET_REGISTER_H);
     int location = port_read_byte(VGA_DATA_REGISTER) << 8;
     // Request the low byte.
-    port_write_byte(VGA_CTRL_REGISTER, 15);
+    port_write_byte(VGA_CTRL_REGISTER, CURSOR_OFFSET_REGISTER_L);
     location += port_read_byte(VGA_DATA_REGISTER);
     // Each character cell is 2 wide.
     return location * 2;
@@ -117,10 +117,10 @@ void set_cursor_loc(int location) {
     // Each character cell is 2 wide.
     location /= 2;
     // Write the high byte.
-    port_write_byte(VGA_CTRL_REGISTER, 14);
+    port_write_byte(VGA_CTRL_REGISTER, CURSOR_OFFSET_REGISTER_H);
     port_write_byte(VGA_DATA_REGISTER, (unsigned char) (location >> 8));
     // Write the low byte.
-    port_write_byte(VGA_CTRL_REGISTER, 15);
+    port_write_byte(VGA_CTRL_REGISTER, CURSOR_OFFSET_REGISTER_L);
     port_write_byte(VGA_DATA_REGISTER, (unsigned char) (location & 0xff));
 }
 
