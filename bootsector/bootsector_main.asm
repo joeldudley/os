@@ -33,12 +33,12 @@ BOOT_DRIVE db 0             ; The boot's drive address (assigned above).
 KERNEL_ADDRESS equ 0x1000   ; The address where the kernel is loaded.
 
 ; INCLUDES
-; `include` directives are placed here so that they aren't run until required.
-%include "bootsect/gdt.asm"
-%include "bootsect/enter_prot_mode.asm"
-%include "bootsect/helpers/print.asm"
-%include "bootsect/helpers/load_from_disk.asm"
-%include "bootsect/load_kernel.asm"
+; We include the files at the end so that they aren't run unless jumped to.
+%include "bootsector/global_descriptor_table.asm"
+%include "bootsector/enter_prot_mode.asm"
+%include "bootsector/helpers/print.asm"
+%include "bootsector/helpers/load_from_disk.asm"
+%include "bootsector/load_kernel.asm"
 
 ; PADDING
 times 510 - ($ - $$) db 0   ; Pads the rest of the boot sector.
