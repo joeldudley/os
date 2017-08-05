@@ -1,8 +1,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-// We will use these types with no semantic meaning to to allocate 
-// non-character bytes.
+// We use these types with no semantic meaning to allocate non-character bytes.
 typedef unsigned int   u32;
 typedef          int   s32;
 typedef unsigned short u16;

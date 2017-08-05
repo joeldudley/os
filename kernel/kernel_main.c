@@ -2,17 +2,16 @@
 #include "util.h"
 
 /** 
- * Demonstrates screen printing and scrolling.
+ * Screen printing and scrolling.
  */
 void main() {
     clear_screen();
 
-    // Use up the available rows.
-    int i = 0;
-    for (i = 0; i < 24; i++) {
-        char str[255];
-        int_to_ascii(i, str);
-        print_string(str, 0, i);
+    // Print on all the available rows.
+    char str_to_print[255];
+    for (int i = 0; i < 24; i++) {
+        int_to_ascii(i, str_to_print);
+        print_string(str_to_print, 0, i);
     }
 
     print_string("This text forces the kernel to scroll. Row 0 will disappear. ", 60, 24);

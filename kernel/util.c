@@ -11,20 +11,28 @@ void char_array_copy(char *src, char *dest, int len) {
  * Converts an int to its ASCII equivalent.
  */
 void int_to_ascii(int n, char str[]) {
-    // Flip the int if it's negative.
-    int is_neg = (n < 0);
-    if (is_neg) n = -n;
+    int is_neg = n < 0;
+
+    // Flip n's sign if n is negative.
+    int pos_n;
+    if (is_neg) {
+        pos_n = -n;
+    } else {
+        pos_n = n;
+    }
 
     // Build the ASCII integer in reverse.
-    int i = 0;
+    int str_loc = 0;
     do {
         // The ASCII integer code are in order following '0'.
-        str[i++] = n % 10 + '0';
-    } while ((n /= 10) > 0);
+        str[str_loc++] = pos_n % 10 + '0';
+    } while ((pos_n /= 10) > 0);
 
-    // Append the minus sign (as necessary) and the terminating null char.
-    if (is_neg) str[i++] = '-';
-    str[i] = '\0';
+    // Append the minus sign if required, and the terminating null char.
+    if (is_neg) {
+        str[str_loc++] = '-';
+    }
+    str[str_loc] = '\0';
 
-    // TODO: implement "reverse".
+    // TODO: Implement "reverse".
 }
