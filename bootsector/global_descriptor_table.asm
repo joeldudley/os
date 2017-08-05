@@ -1,6 +1,6 @@
 [bits 16]
 gdt_start:
-    dd 0x0                          ; The GDT starts with a null 8-byte.
+    dd 0x0                          ; The GDT starts with 8 null bytes.
     dd 0x0                          ;   "
 
 gdt_code:                           ; GDT for the code segment.
