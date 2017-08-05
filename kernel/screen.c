@@ -2,16 +2,16 @@
 #include "ports.h"
 #include "util.h"
 
-/* Declaration of private functions */
+/* Private functions. */
 int get_cursor_loc();
 void set_cursor_loc(int location);
 int print_char(char c, int col, int row, char attr);
 int coords_to_loc(int col, int row);
-int get_loc_col(int location);
-int get_loc_row(int location);
+int loc_to_col(int location);
+int loc_to_row(int location);
 
 /**********************************************************
- * Kernel API                                             *
+ * Screen API                                             *
  **********************************************************/
 
 /**
@@ -26,18 +26,17 @@ void print_string(char *string, int col, int row) {
         // Use current cursor location if col/row are negative.
         location = get_cursor_loc();
 
-    // Loop through the string and print it.
-    int i = 0;
-    while (string[i] != 0) {
-        col = get_loc_col(location);
-        row = get_loc_row(location);
+    // Loop through the string and print each character.
+    for (int i = 0; string[i] != 0; i++) {
+        col = loc_to_col(location);
+        row = loc_to_row(location);
         // Update the location on each iteration.
-        location = print_char(string[i++], col, row, WHITE_ON_BLACK);
+        location = print_char(string[i], col, row, WHITE_ON_BLACK);
     }
 }
 
 /**********************************************************
- * Private kernel functions                               *
+ * Private screen functions                               *
  **********************************************************/
 
 /**
@@ -60,12 +59,13 @@ int print_char(char c, int col, int row, char attr) {
     int location;
     if (col >= 0 && row >= 0)
         location = coords_to_loc(col, row);
-    // Use current cursor location if col/row are negative.
-    else location = get_cursor_loc();
+    else
+        // Use current cursor location if col/row are negative.
+        location = get_cursor_loc();
 
     // If the char is a new-line, print nothing. 
     if (c == '\n') {
-        row = get_loc_row(location);
+        row = loc_to_row(location);
         location = coords_to_loc(0, row + 1);
     } else {
         vid_mem[location] = c;
@@ -75,19 +75,19 @@ int print_char(char c, int col, int row, char attr) {
 
     // Scroll if the location exceeds the screen size.
     if (location >= MAX_LOC) {
-        // We eliminate the first row by copying every row into the row above.
+        // We copy every row into the row above, deleting the first row.
         for (int i = 1; i < MAX_ROWS; i++) 
             char_array_copy(
                 VIDEO_ADDRESS + coords_to_loc(0, i),
                 VIDEO_ADDRESS + coords_to_loc(0, i - 1),
                 MAX_COLS * 2);
 
-        // We erase the last line.
+        // We clear the last row.
         char *last_line = VIDEO_ADDRESS + coords_to_loc(0, MAX_ROWS - 1);
         for (int i = 0; i < MAX_COLS * 2; i++)
             last_line[i] = 0;
 
-        // We move the cursor up onto the newly-blank line.
+        // We move the cursor down onto the newly-blank line.
         location -= 2 * MAX_COLS;
     }
 
@@ -97,67 +97,66 @@ int print_char(char c, int col, int row, char attr) {
 }
 
 /**
- * Read the cursor's current position.
+ * Read the cursor's current location.
  */
 int get_cursor_loc() {
-    // Request the high byte.
+    // Request the high byte of the cursor's location.
     port_write_byte(VGA_CTRL_REGISTER, CURSOR_OFFSET_REGISTER_H);
-    int location = port_read_byte(VGA_DATA_REGISTER) << 8;
-    // Request the low byte.
+    int current_cell = port_read_byte(VGA_DATA_REGISTER) << 8;
+    // Request the low byte of the cursor's location.
     port_write_byte(VGA_CTRL_REGISTER, CURSOR_OFFSET_REGISTER_L);
-    location += port_read_byte(VGA_DATA_REGISTER);
-    // Each character cell is 2 wide.
-    return location * 2;
+    current_cell += port_read_byte(VGA_DATA_REGISTER);
+    // Each character cell is 2 bytes wide.
+    return current_cell * 2;
 }
 
 /**
- * Set the cursor's current position.
+ * Set the cursor's location.
  */
 void set_cursor_loc(int location) {
-    // Each character cell is 2 wide.
+    // Each character cell is 2 bytes wide.
     location /= 2;
-    // Write the high byte.
+    // Write the high byte of the cursor's location.
     port_write_byte(VGA_CTRL_REGISTER, CURSOR_OFFSET_REGISTER_H);
-    port_write_byte(VGA_DATA_REGISTER, (unsigned char) (location >> 8));
-    // Write the low byte.
+    port_write_byte(VGA_DATA_REGISTER, (u8) (location >> 8));
+    // Write the low byte of the cursor's location.
     port_write_byte(VGA_CTRL_REGISTER, CURSOR_OFFSET_REGISTER_L);
-    port_write_byte(VGA_DATA_REGISTER, (unsigned char) (location & 0xff));
+    port_write_byte(VGA_DATA_REGISTER, (u8) (location & 0xff));
 }
 
 /**
- * Clear the screen's contents.
+ * Clear the screen.
  */
 void clear_screen() {
     char *vid_mem = VIDEO_ADDRESS;
 
-    // We blank out each video cell and reset it's colour.
+    // We overwrite each video cell and reset its colour.
     for (int i = 0; i < SCREEN_SIZE; i++) {
         vid_mem[i * 2] = ' ';
         vid_mem[i * 2 + 1] = WHITE_ON_BLACK;
     }
 
-    // We reset the cursor to the start of the screen.
+    // We move the cursor to the start of the screen.
     set_cursor_loc(coords_to_loc(0, 0));
 }
 
 /**
- * Converts a col & row to the corresponding int representation.
- * This is how the BIOS represents the cursor's location.
+ * Converts a column and row to the corresponding integer location.
  */
 int coords_to_loc(int col, int row) { 
     return 2 * (row * MAX_COLS + col); 
 }
 
 /**
- * Extracts the col from a location's int representation.
+ * Extracts the column from an integer location.
  */
-int get_loc_col(int location) { 
-    return (location - (get_loc_row(location) * 2 * MAX_COLS)) / 2; 
+int loc_to_col(int location) { 
+    return (location - (loc_to_row(location) * 2 * MAX_COLS)) / 2; 
 }
 
 /**
- * Extracts the row from a location's int representation.
+ * Extracts the row from an integer location.
  */
-int get_loc_row(int location) { 
+int loc_to_row(int location) { 
     return location / (2 * MAX_COLS); 
 }
