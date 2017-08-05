@@ -22,7 +22,7 @@
 mov [BOOT_TYPE], dl         ; At start-up, the boot device's type is stored in 
                             ; `dl`. We store this information for later use.
 
-mov bp, STACK_BASE          ; Sets the base of the real-mode stack.
+mov bp, RM_STACK_BASE       ; Sets the base of the real-mode stack.
 mov sp, bp                  ; Sets the real-mode stack pointer.
 
 call load_kernel            ; Loads the kernel from disk into memory.
@@ -35,7 +35,7 @@ jmp KERNEL_ADDRESS          ; Jumps to where the kernel was loaded.
 
 ; CONSTANTS
 BOOT_TYPE db 0              ; The boot's drive address (overwritten above).
-STACK_BASE equ 0x9000       ; The base of the real-mode stack.
+RM_STACK_BASE equ 0x9000    ; The base of the real-mode stack.
 KERNEL_ADDRESS equ 0x1000   ; The address at which the kernel is loaded.
 SECTOR_SIZE equ 510         ; The size of a sector excluding the magic word.
 MAGIC_WORD equ 0xaa55       ; The magic word identifying a bootsector.

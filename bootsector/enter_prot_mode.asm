@@ -16,8 +16,11 @@ init_prot_mode:                     ; Initialises protected mode.
     mov fs, ax                      ;   "
     mov gs, ax                      ;   "
 
-    mov ebp, 0x90000                ; Updates the stack to point to the top of the free space.
+    mov ebp, PM_STACK_BASE          ; Updates the stack to point to the top of the free space.
     mov esp, ebp                    ;   "
 
     jmp after_entering_prot_mode    ; We can't use `ret` here because we've messed with the 
                                     ; registers so much.
+
+; CONSTANTS
+PM_STACK_BASE equ 0x90000           ; The base of the protected-mode stack.

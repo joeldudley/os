@@ -12,7 +12,7 @@ disk_load:           ; Read 'dh' sectors from sector 2 onwards of the medium of 
     mov ch, CYLINDER ;   "
     mov dh, HEAD     ;   "
 
-    int 0x13         ; Reads from disk into `es:bx`, and throws an error if the read failed.
+    int DISK_RW      ; Reads from disk into `es:bx`, and throws an error if the read failed.
     jc disk_err      ;   "
 
     pop dx
@@ -26,8 +26,9 @@ READ equ 0x02        ; 'read' mode for BIOS interrupt 0x13 (disk read/write).
 SECTOR equ 0x02      ; The sector to start reading from (0x01 is boot).
 CYLINDER equ 0x00    ; The cylinder to read.
 HEAD equ 0x00        ; The head to read.
-DISK_ERROR db "Disk read error", 0
-SECTORS_ERROR db "Incorrect number of sectors read", 0
+DISK_RW equ 0x13     ; The BIOS interrupt for disk read/write.
+DISK_ERROR db "Disk read error", 0                      ; Strings are null-byte terminated.
+SECTORS_ERROR db "Incorrect number of sectors read", 0  ;   "
 
 disk_err:
     mov bx, DISK_ERROR
