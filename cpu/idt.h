@@ -35,9 +35,8 @@ typedef struct {
 idt_gate_t idt[IDT_ENTRIES];
 idt_register_t idt_reg;
 
-
-/* Functions implemented in idt.c */
+/* Functions implemented in idt.c. */
 void set_idt_gate(int n, u32 handler);
-void set_idt();
+void load_idt();
 
 #endif

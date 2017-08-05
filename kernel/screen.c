@@ -18,7 +18,7 @@ int loc_to_row(int location);
  * Prints a string at the specified (col, row) location.
  * If col/row < 0, prints at the cursor's current location.
  */
-void print_string(char *string, int col, int row) {
+void print(char *string, int col, int row) {
     int location;
     if (col >= 0 && row >= 0)
         location = coords_to_loc(col, row);
