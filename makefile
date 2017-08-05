@@ -36,7 +36,7 @@ build/%.bin: bootsector/%.asm
 	nasm $< -f bin -o $@
 
 # Assembles `call_kernel.asm` in elf format.
-build/call_kernel.o: bootsector/call_kernel.asm
+build/call_kernel.o: kernel/call_kernel.asm
 	nasm $< -f elf -o $@
 
 # Compiles all kernel files.
