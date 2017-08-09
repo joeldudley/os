@@ -5,14 +5,15 @@
 # `$<` refers to the first input file.
 # `$^` refers to all input files.
 
-OBJECTS :=  build/call_kernel.o \
-			build/kernel_main.o \
-			build/ports.o \
-			build/screen.o \
-			build/util.o \
-			build/idt.o \
-			build/isr.o \
-			build/interrupt.o
+# We build up a list of object files based on the available .asm and .c files.
+# `bootsector/call_kernel.asm` must come first when building the kernel image.
+OBJECTS := $(wildcard kernel/*.c kernel/*.asm cpu/*.c cpu/*.asm)
+OBJECTS := bootsector/call_kernel.asm ${OBJECTS}
+OBJECTS := ${OBJECTS:.c=.o}
+OBJECTS := ${OBJECTS:.asm=.o}
+OBJECTS := ${subst kernel/,build/,$(OBJECTS)}
+OBJECTS := ${subst cpu/,build/,$(OBJECTS)}
+OBJECTS := ${subst bootsector/,build/,$(OBJECTS)}
 
 # Runs the operating system.
 run: clean build/os-image.bin
