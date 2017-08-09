@@ -5,7 +5,14 @@
 # `$<` refers to the first input file.
 # `$^` refers to all input files.
 
-OBJECTS := build/call_kernel.o build/kernel_main.o build/ports.o build/screen.o build/util.o build/idt.o build/isr.o build/interrupt.o
+OBJECTS :=  build/call_kernel.o \
+			build/kernel_main.o \
+			build/ports.o \
+			build/screen.o \
+			build/util.o \
+			build/idt.o \
+			build/isr.o \
+			build/interrupt.o
 
 # Runs the operating system.
 run: clean build/os-image.bin
@@ -19,10 +26,9 @@ debug: clean build/os-image.bin build/kernel_main.elf
 
 # Deletes any existing build files.
 clean:
+	rm -rf build
 	# The `-p` flag prevents an error if the `build` folder already exists.
 	mkdir -p build
-	# Deletes the existing build files.
-	rm -f build/*.bin build/*.o build/*.elf
 
 # The targets below should not be invoked directly.
 
@@ -33,28 +39,19 @@ build/os-image.bin: build/bootsector_main.bin build/kernel_main.bin
 build/kernel_main.bin: $(OBJECTS)
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
 
-# Assembles all bootsector files.
-build/%.bin: bootsector/%.asm
-	nasm $< -f bin -o $@
-
-# Assembles all .asm kernel files in elf format.
-build/%.o: kernel/%.asm
-	nasm $< -f elf -o $@
-
-# Assembles all .asm cpu files in elf format.
-build/%.o: cpu/%.asm
-	nasm $< -f elf -o $@
-
-# Compiles all .c kernel files.
-build/%.o: kernel/%.c
-	# The `-g` flag compiles the files with debug information.
-	i386-elf-gcc -g -ffreestanding -c $^ -o $@
-
-# Compiles all .c CPU files.
-build/%.o: cpu/%.c
-	# The `-g` flag compiles the files with debug information.
-	i386-elf-gcc -g -ffreestanding -c $^ -o $@
-
 # For debugging.
 build/kernel_main.elf: $(OBJECTS)
 	i386-elf-ld -o $@ -Ttext 0x1000 $^
+
+# Assembles all .asm files in .bin format.
+build/%.bin: */%.asm
+	nasm $< -f bin -o $@
+
+# Assembles all .asm files in .elf format.
+build/%.o: */%.asm
+	nasm $< -f elf -o $@
+
+# Compiles all .c files in .o format.
+build/%.o: */%.c
+	# The `-g` flag compiles the files with debug information.
+	i386-elf-gcc -g -ffreestanding -c $^ -o $@
