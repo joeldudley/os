@@ -28,12 +28,16 @@ clean:
 build/os-image.bin: build/bootsector_main.bin build/kernel_main.bin
 	cat $^ > $@
 
-build/kernel_main.bin: build/call_kernel.o build/kernel_main.o build/ports.o build/screen.o build/util.o
+build/kernel_main.bin: build/call_kernel.o build/kernel_main.o build/ports.o build/screen.o build/util.o build/idt.o build/isr.o build/interrupt.o
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
 
-# Assembles all bootsector files in bin format.
+# Assembles all bootsector files.
 build/%.bin: bootsector/%.asm
 	nasm $< -f bin -o $@
+
+# Assembles `interrupt.asm` in elf format.
+build/interrupt.o: cpu/interrupt.asm
+	nasm $< -f elf -o $@
 
 # Assembles `call_kernel.asm` in elf format.
 build/call_kernel.o: kernel/call_kernel.asm
@@ -44,6 +48,11 @@ build/%.o: kernel/%.c
 	# The `-g` flag compiles the files with debug information.
 	i386-elf-gcc -g -ffreestanding -c $^ -o $@
 
+# Compiles all CPU files.
+build/%.o: cpu/%.c
+	# The `-g` flag compiles the files with debug information.
+	i386-elf-gcc -g -ffreestanding -c $^ -o $@
+
 # For debugging.
-build/kernel.elf: build/call_kernel.o build/kernel_main.o build/ports.o build/screen.o build/util.o
+build/kernel.elf: build/call_kernel.o build/kernel_main.o build/ports.o build/screen.o build/util.o build/idt.o build/isr.o build/interrupt.o
 	i386-elf-ld -o $@ -Ttext 0x1000 $^

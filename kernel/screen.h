@@ -22,6 +22,7 @@ The VGA controller is split into two registers:
 
 /* Public kernel API. */
 void clear_screen();
-void print(char *message, int col, int row);
+void print_at(char *message, int col, int row);
+void print(char *message);
 
 #endif
