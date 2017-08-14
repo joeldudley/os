@@ -5,15 +5,16 @@
 # `$<` refers to the first input file.
 # `$^` refers to all input files.
 
-# We build up a list of object files based on the available .asm and .c files.
+# We print a variable using `$(info [${OBJECTS}])`.
+
+# We create a list of the objects files required to create the kernel binary.
 # `bootsector/call_kernel.asm` must come first when building the kernel image.
-OBJECTS := $(wildcard kernel/*.c kernel/*.asm cpu/*.c cpu/*.asm)
-OBJECTS := bootsector/call_kernel.asm ${OBJECTS}
+OBJECTS := bootsector/call_kernel.asm $(wildcard kernel/*.c kernel/*.asm cpu/*.c cpu/*.asm)
 OBJECTS := ${OBJECTS:.c=.o}
 OBJECTS := ${OBJECTS:.asm=.o}
-OBJECTS := ${subst kernel/,build/,$(OBJECTS)}
-OBJECTS := ${subst cpu/,build/,$(OBJECTS)}
-OBJECTS := ${subst bootsector/,build/,$(OBJECTS)}
+OBJECTS := ${patsubst kernel/%.o,build/%.o,$(OBJECTS)}
+OBJECTS := ${patsubst cpu/%.o,build/%.o,$(OBJECTS)}
+OBJECTS := ${patsubst bootsector/%.o,build/%.o,$(OBJECTS)}
 
 # Runs the operating system.
 run: clean build/os-image.bin
