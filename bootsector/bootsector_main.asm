@@ -44,9 +44,9 @@ MAGIC_WORD equ 0xaa55       ; The magic word identifying a bootsector.
 ; We include the files at the end so that they aren't run unless jumped to.
 %include "bootsector/global_descriptor_table.asm"
 %include "bootsector/enter_prot_mode.asm"
-%include "bootsector/helpers/print.asm"
-%include "bootsector/helpers/disk_load.asm"
 %include "bootsector/load_kernel.asm"
+%include "bootsector/functions/print.asm"
+%include "bootsector/functions/disk_load.asm"
 
 ; PADDING
 times SECTOR_SIZE - ($ - $$) db 0   ; Pads the rest of the bootsector.
