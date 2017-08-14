@@ -2,6 +2,7 @@
 ; characteristics of the various memory areas used during program execution, including their base 
 ; address, size, and access privileges such as executability and writability.
 ; Each descriptor is 8-bytes long.
+
 [bits 16]
 gdt_start:
     dd 0x0                          ; The GDT starts with 8 null bytes.
