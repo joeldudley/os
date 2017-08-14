@@ -15,14 +15,13 @@
 #define WHITE_ON_BLACK 0x0f
 #define RED_ON_WHITE 0xf4
 
-/* Screen I/O ports.
-The VGA controller has two registers:
-  * A data register where data is placed.
-  * An index register indicating the type of the data in the VGA data register. */
+// The VGA controller has two registers:
+//   * A data register where data is placed.
+//   * An index register indicating the type of the data in the VGA data register.
 #define VGA_IDX_PORT 0x3d4
 #define VGA_DATA_PORT 0x3d5
 
-/* VGA index register indices for the cursor location. */
+// VGA index register indices for the cursor location:
 #define CURSOR_LOCATION_REGISTER_H 14
 #define CURSOR_LOCATION_REGISTER_L 15
 
