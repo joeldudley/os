@@ -3,11 +3,13 @@
 
 // Text screen video memory for colour monitors starts at 0xB8000.
 #define VIDEO_ADDRESS (char*) 0xb8000
+
 // The size of the screen.
 #define MAX_ROWS 25
 #define MAX_COLS 80
 #define SCREEN_SIZE (MAX_COLS * MAX_ROWS)
 #define MAX_LOC (2 * SCREEN_SIZE)
+
 // Text mode memory uses two bytes for every character:
 //   * An ASCII code byte
 //   * An attribute byte
