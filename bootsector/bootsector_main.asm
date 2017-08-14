@@ -12,10 +12,6 @@
 
 ; Our bootloader fits in a single sector, so we don't need a two-stage loader.
 
-; `db` places the specified byte in the binary.
-; `dw` places the two specified bytes (i.e. a word) in the binary.
-; `equ` gives a symbolic name to a numeric constant.
-
 [org 0x7c00]                ; Sets the default offset to 0x7c00, as this is   
                             ; the address at which the bootsector is loaded.
 

@@ -13,6 +13,13 @@ Run the operating system using `make`.
 * Set breakpoints using `b [LINE_NUMBER]`
 * Continue to the next breakpoint using `continue`
 
+# Assembly instructions
+
+* `db` places the specified byte in the binary
+* `dw` places the two specified bytes (i.e. a word) in the binary
+* `equ` gives a symbolic name to a numeric constant
+* `global` makes a symbol visible to the linker so that other object files can use it
+
 # Inline assembly
 
 In GCC extended inline assembly, the sections are separated by colons:

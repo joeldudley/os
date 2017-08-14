@@ -1,5 +1,9 @@
 /**
  * Copies a char array.
+ * 
+ * *src: The input char array.
+ * *dest: The output char array.
+ * len: The length of the array.
  */
 void char_array_copy(char *src, char *dest, int len) {
     for (int i = 0; i < len; i++) {
@@ -9,6 +13,9 @@ void char_array_copy(char *src, char *dest, int len) {
 
 /**
  * Converts an int to its ASCII equivalent.
+ *
+ * n: The integer to convert.
+ * str[]: The output char array.
  */
 void int_to_ascii(int n, char str[]) {
     int is_neg = n < 0;
