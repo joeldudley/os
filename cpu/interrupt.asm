@@ -1,29 +1,26 @@
 [extern isr_handler]
 
-isr_prep:          ; Prepares the CPU to handle an interrupt.
-    ; Save the CPU's current state.
-	pusha
-	mov ax, ds     ; Lower 16-bits of eax = ds.
-	push eax       ; save the data segment descriptor
-	mov ax, 0x10   ; kernel data segment descriptor
-	mov ds, ax
-	mov es, ax
-	mov fs, ax
-	mov gs, ax
+isr_prep:              ; Prepares the CPU to handle an interrupt.
+	pusha              ; Saves the CPU's current state.
+	mov ax, ds         ; Lower 16-bits of eax = ds.
+	push eax           ; Save the data segment descriptor.
+	mov ax, 0x10       ; Kernel data segment descriptor.
+	mov ds, ax         ;   "
+	mov es, ax         ;   "
+	mov fs, ax         ;   "
+	mov gs, ax         ;   "
 	
-    ; Call the C interrupt handler.
-	call isr_handler
+	call isr_handler   ; Calls the C interrupt handler.
 	
-    ; Restore the CPU's state.
-	pop eax 
-	mov ds, ax
-	mov es, ax
-	mov fs, ax
-	mov gs, ax
-	popa
-	add esp, 8     ; Cleans up the pushed error code and pushed ISR number.
-	sti
-	iret           ; Pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP.
+	pop eax            ; Restores the CPU's state.
+	mov ds, ax         ;   "
+	mov es, ax         ;   "
+	mov fs, ax         ;   "
+	mov gs, ax         ;   "
+	popa               ;   "
+	add esp, 8         ; Cleans up the pushed error code and pushed ISR number.
+	sti                ;   "
+	iret               ; Pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP.
 	
 ; We don't get information about which interrupt was called when the handler is run, so we need to  
 ; create a different handler for each interrupt.
@@ -98,7 +95,7 @@ isr7:
 global isr8
 isr8:
     cli
-    push byte 8     ; Pushes an error code onto the stack.
+    push byte 8        ; Pushes an error code onto the stack.
     jmp isr_prep
 
 ; 9: Coprocessor Segment Overrun Exception
@@ -113,35 +110,35 @@ isr9:
 global isr10
 isr10:
     cli
-    push byte 10     ; Pushes an error code onto the stack.
+    push byte 10       ; Pushes an error code onto the stack.
     jmp isr_prep
 
 ; 11: Segment Not Present Exception
 global isr11
 isr11:
     cli
-    push byte 11     ; Pushes an error code onto the stack.
+    push byte 11       ; Pushes an error code onto the stack.
     jmp isr_prep
 
 ; 12: Stack Fault Exception
 global isr12
 isr12:
     cli
-    push byte 12     ; Pushes an error code onto the stack.
+    push byte 12       ; Pushes an error code onto the stack.
     jmp isr_prep
 
 ; 13: General Protection Fault Exception
 global isr13
 isr13:
     cli
-    push byte 13     ; Pushes an error code onto the stack.
+    push byte 13       ; Pushes an error code onto the stack.
     jmp isr_prep
 
 ; 14: Page Fault Exception
 global isr14
 isr14:
     cli
-    push byte 14     ; Pushes an error code onto the stack.
+    push byte 14       ; Pushes an error code onto the stack.
     jmp isr_prep
 
 ; 15: Reserved Exception
