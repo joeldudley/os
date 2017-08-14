@@ -1,6 +1,7 @@
 # Table of Contents
 * Running the OS
 * Debugging the OS
+# Assembly instructions
 * Inline assembly
 
 # Running the OS
