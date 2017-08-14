@@ -1,12 +1,12 @@
 ; At start-up, the BIOS:
 ; * Searches for a boot sector on the bootable devices
-;   * A boot sector is one ending with a magic word
+;   * A boot sector is a sector ending with a magic word
 ; * Loads the bootloader from the boot sector into memory at 0x7c00
 ; * Transfers execution to the bootloader
 
 ; The bootloader must then:
-; * Find and load the kernel into memory
-; * Shift from real mode into protected mode
+; * Find the kernel and load it into memory
+; * Shift from real mode to protected mode
 ; * Prepare the kernel's runtime environment
 ; * Jump to the kernel
 
