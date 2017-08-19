@@ -120,20 +120,20 @@ void build_and_load_idt() {
  * Adds a kernel-privilege, used 32-bit interrupt gate to the IDT.
  */
 void add_interrupt_gate(int n, u32 handler) {
-	interrupt_gates[n].low_offset = low_16(handler);
-	interrupt_gates[n].sel = KERNEL_CS;
-	interrupt_gates[n].always0 = 0;
+	interrupts[n].low_offset = low_16(handler);
+	interrupts[n].sel = KERNEL_CS;
+	interrupts[n].always0 = 0;
     // A kernel-privilege, used 32-bit interrupt gate.
-	interrupt_gates[n].flags = 0x8E;
-	interrupt_gates[n].high_offset = high_16(handler);
+	interrupts[n].flags = 0x8E;
+	interrupts[n].high_offset = high_16(handler);
 }
 
 /**
  * Loads the IDT.
  */
 void load_idt() {
-    idt.base = (u32) &interrupt_gates;
-    idt.limit = NUM_IDT_ENTRIES * sizeof(interrupt_handler_t) - 1;
+    idt.base = (u32) &interrupts;
+    idt.limit = NUM_IDT_ENTRIES * sizeof(interrupt_t) - 1;
     // `lidtl` is an assembly instruction to load the IDT.
     asm volatile("lidtl (%0)" : : "r" (&idt));
 }

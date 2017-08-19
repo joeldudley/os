@@ -23,7 +23,7 @@ typedef struct {
        * Bit 7: Set to 0 for unused interrupts */
     u8 flags;
     u16 high_offset;                    // Higher 16 bits of the interrupt service routine's address.
-} __attribute__((packed)) interrupt_handler_t ;  // `packed` prevents the compiler from padding the struct.
+} __attribute__((packed)) interrupt_t ;  // `packed` prevents the compiler from padding the struct.
 
 // An Interrupt Table Descriptor.
 typedef struct {
@@ -39,15 +39,15 @@ typedef struct {
    u32 eip, cs, eflags, useresp, ss;            // Automatically pushed by the processor.
 } interrupt_registers_t;
 
-interrupt_handler_t interrupt_gates[NUM_IDT_ENTRIES];    // Our array of interrupt handlers.
-idt_t idt;                 						// Our Interrupt Table Descriptor.
+idt_t idt;                 						// The Interrupt Table Descriptor.
+interrupt_t interrupts[NUM_IDT_ENTRIES];        // The IDT's array of interrupts.
+typedef void (*isr_t) (interrupt_registers_t);  // A pointer to a handler function.
+isr_t interrupt_handlers[256];					// The handler for each interrupt.
 
 void build_and_load_idt();
 void add_interrupt_gate(int n, u32 handler);
 void load_idt();
 void handle_interrupt(interrupt_registers_t r);
-
-typedef void (*isr_t)(registers_t);
 isr_t interrupt_handlers[256];
 
 /* Interrupt handler definitions. */
