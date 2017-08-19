@@ -37,3 +37,7 @@ In GCC extended inline assembly, the sections are separated by colons:
     * `d` refers to registers %edx, %dx, and %dl
     * `S` refers to registers %esi and %si
     * `D` refers to registers %edi and %di
+
+# Common errors
+
+* Make sure load_kernel.asm reads enough sectors from the boot medium to load the entire kernel.

@@ -84,17 +84,17 @@ void build_and_load_idt() {
 
     // Remap the PIC.
     // TODO: Find out what this means.
-//    port_write_byte(0x20, 0x11);
-//    port_write_byte(0xA0, 0x11);
-//    port_write_byte(0x21, 0x20);
-//    port_write_byte(0xA1, 0x28);
-//    port_write_byte(0x21, 0x04);
-//    port_write_byte(0xA1, 0x02);
-//    port_write_byte(0x21, 0x01);
-//    port_write_byte(0xA1, 0x01);
-//    port_write_byte(0x21, 0x0);
-//    port_write_byte(0xA1, 0x0);
-//
+   port_write_byte(0x20, 0x11);
+   port_write_byte(0xA0, 0x11);
+   port_write_byte(0x21, 0x20);
+   port_write_byte(0xA1, 0x28);
+   port_write_byte(0x21, 0x04);
+   port_write_byte(0xA1, 0x02);
+   port_write_byte(0x21, 0x01);
+   port_write_byte(0xA1, 0x01);
+   port_write_byte(0x21, 0x0);
+   port_write_byte(0xA1, 0x0);
+
     // Add the interrupt requests.
     add_interrupt_gate(32, (u32) irq0);
     add_interrupt_gate(33, (u32) irq1);
