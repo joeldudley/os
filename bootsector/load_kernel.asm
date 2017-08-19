@@ -8,4 +8,4 @@ load_kernel:                ; Reads our kernel from sector 2 onwards of the boot
     ret
 
 ; CONSTANTS
-KERNAL_SIZE equ 32          ; The size of our kernel in sectors.
+KERNAL_SIZE equ 31          ; The size of our kernel in sectors.

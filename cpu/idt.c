@@ -159,7 +159,7 @@ void register_interrupt_handler(u8 n, isr_t *handler) {
 void handle_irq(interrupt_registers_t r) {
     /* After every interrupt we need to send an EOI to the PICs
      * or they will not send another interrupt again */
-    if (r.interrupt_no >= 40) port_write_byte(0xA0, 0x20); /* slave */
+	if (r.interrupt_no >= 40) port_write_byte(0xA0, 0x20); /* slave */
     port_write_byte(0x20, 0x20); /* master */
 
     /* Handle the interrupt in a more modular way */

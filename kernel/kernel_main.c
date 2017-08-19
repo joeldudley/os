@@ -1,14 +1,17 @@
 #include "screen.h"
 #include "util.h"
 #include "../cpu/idt.h"
+#include "../cpu/timer.h"
 
 /** 
  * Testing interrupts.
  */
 void main() {
     build_and_load_idt();
-    // Test the interrupts.
-    // All contant-value operands in inline ASM must be prefixed with `$`.
-    asm volatile("int $2");
-    asm volatile("int $3");
+
+    asm volatile("sti");
+//    init_timer(50);
+    /* Comment out the timer IRQ handler to read
+     * the keyboard IRQs easier */
+//    init_keyboard();
 }
