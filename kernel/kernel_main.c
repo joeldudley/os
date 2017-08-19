@@ -6,7 +6,7 @@
  * Testing interrupts.
  */
 void main() {
-    build_idt();
+    build_and_load_idt();
     // Test the interrupts.
     // All contant-value operands in inline ASM must be prefixed with `$`.
     asm volatile("int $2");

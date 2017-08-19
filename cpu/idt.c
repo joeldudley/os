@@ -3,31 +3,9 @@
 #include "../kernel/util.h"
 
 /**
- * Adds a kernel-privilege, used 32-bit interrupt gate to the IDT.
+ * Installs the handlers for CPU exception interrupts in the IDT and loads the IDT.
  */
-void add_interrupt_handler(int n, u32 handler) {
-    idt_handlers[n].low_offset = low_16(handler);
-    idt_handlers[n].sel = KERNEL_CS;
-    idt_handlers[n].always0 = 0;
-    // A kernel-privilege, used 32-bit interrupt gate.
-    idt_handlers[n].flags = 0x8E; 
-    idt_handlers[n].high_offset = high_16(handler);
-}
-
-/**
- * Loads the IDT.
- */
-void load_idt() {
-    idt.base = (u32) &idt_handlers;
-    idt.limit = NUM_IDT_ENTRIES * sizeof(idt_handler_t) - 1;
-    // `lidtl` is an assembly instruction to load the IDT.
-    asm volatile("lidtl (%0)" : : "r" (&idt));
-}
-
-/**
- * Installs the handlers for CPU exception interrupts in the IDT.
- */
-void build_idt() {
+void build_and_load_idt() {
     add_interrupt_handler(0, (u32) interrupt0);
     add_interrupt_handler(1, (u32) interrupt1);
     add_interrupt_handler(2, (u32) interrupt2);
@@ -65,7 +43,29 @@ void build_idt() {
 }
 
 /**
- * Stores the message associated with each ISR.
+ * Adds a kernel-privilege, used 32-bit interrupt gate to the IDT.
+ */
+void add_interrupt_handler(int n, u32 handler) {
+    idt_handlers[n].low_offset = low_16(handler);
+    idt_handlers[n].sel = KERNEL_CS;
+    idt_handlers[n].always0 = 0;
+    // A kernel-privilege, used 32-bit interrupt gate.
+    idt_handlers[n].flags = 0x8E;
+    idt_handlers[n].high_offset = high_16(handler);
+}
+
+/**
+ * Loads the IDT.
+ */
+void load_idt() {
+    idt.base = (u32) &idt_handlers;
+    idt.limit = NUM_IDT_ENTRIES * sizeof(idt_handler_t) - 1;
+    // `lidtl` is an assembly instruction to load the IDT.
+    asm volatile("lidtl (%0)" : : "r" (&idt));
+}
+
+/**
+ * Stores the message associated with each interrupt.
  */
 char *exception_messages[] = {
     "Division By Zero",
@@ -108,12 +108,12 @@ char *exception_messages[] = {
 /**
  * Handles an interrupt.
  */
-void handle_interrupt(interrupt_registers r) {
+void handle_interrupt(interrupt_registers_t r) {
     print("Received an interrupt: ");
-    char isr_number[3];
-    int_to_ascii(r.int_no, isr_number);
-    print(isr_number);
+    char interrupt_number[3];
+    int_to_ascii(r.interrupt_no, interrupt_number);
+    print(interrupt_number);
     print("\n");
-    print(exception_messages[r.int_no]);
+    print(exception_messages[r.interrupt_no]);
     print("\n");
 }

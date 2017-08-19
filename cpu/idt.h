@@ -31,11 +31,21 @@ typedef struct {
     u32 base;
 } __attribute__((packed)) idt_t;
 
-idt_handler_t idt_handlers[NUM_IDT_ENTRIES];        // Our array of interrupt handlers.
-idt_t idt;                 // Our Interrupt Table Descriptor.
+// Registers pushed before calling the interrupt handler.
+typedef struct {
+   u32 ds;                                      // Data segment selector.
+   u32 edi, esi, ebp, esp, ebx, edx, ecx, eax;  // Pushed by `pusha`.
+   u32 interrupt_no, err_code;                  // Interrupt number and error code (if applicable).
+   u32 eip, cs, eflags, useresp, ss;            // Automatically pushed by the processor.
+} interrupt_registers_t;
 
+idt_handler_t idt_handlers[NUM_IDT_ENTRIES];    // Our array of interrupt handlers.
+idt_t idt;                 						// Our Interrupt Table Descriptor.
+
+void handle_interrupt(interrupt_registers_t r);
 void add_interrupt_handler(int n, u32 handler);
 void load_idt();
+void build_and_load_idt();
 
 /* Interrupt service routines reserved for CPU exceptions. */
 extern void interrupt0();
@@ -70,16 +80,5 @@ extern void interrupt28();
 extern void interrupt29();
 extern void interrupt30();
 extern void interrupt31();
-
-// Registers pushed before calling the interrupt handler.
-typedef struct {
-   u32 ds;                                      // Data segment selector.
-   u32 edi, esi, ebp, esp, ebx, edx, ecx, eax;  // Pushed by `pusha`.
-   u32 int_no, err_code;                        // Interrupt number and error code (if applicable).
-   u32 eip, cs, eflags, useresp, ss;            // Automatically pushed by the processor.
-} interrupt_registers;
-
-void build_idt();
-void handle_interrupt(interrupt_registers r);
 
 #endif
