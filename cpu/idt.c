@@ -3,8 +3,6 @@
 #include "../kernel/util.h"
 #include "../kernel/ports.h"
 
-isr_t interrupt_handlers[256];
-
 /**
  * Stores the message associated with each interrupt.
  */
