@@ -4,7 +4,7 @@
 #include "types.h"
 
 // Constants.
-#define KERNEL_CS 0x08  
+#define KERNEL_CS 0x08
 #define NUM_IDT_ENTRIES 256
 
 // An interrupt handler.
@@ -41,14 +41,14 @@ typedef struct {
 
 idt_t idt;                 						// The Interrupt Table Descriptor.
 interrupt_t interrupts[NUM_IDT_ENTRIES];        // The IDT's array of interrupts.
-typedef void (*isr_t) (interrupt_registers_t);  // A pointer to a handler function.
-isr_t interrupt_handlers[256];					// The handler for each interrupt.
 
 void build_and_load_idt();
 void add_interrupt_gate(int n, u32 handler);
 void load_idt();
 void handle_interrupt(interrupt_registers_t r);
-isr_t interrupt_handlers[256];
+
+typedef void (*isr_t) (interrupt_registers_t);  // A pointer to a handler function.
+void register_interrupt_handler(u8 n, isr_t handler);
 
 /* Interrupt handler definitions. */
 extern void isr0();

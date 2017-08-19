@@ -3,6 +3,8 @@
 #include "../kernel/util.h"
 #include "../kernel/ports.h"
 
+isr_t interrupt_handlers[256];
+
 /**
  * Stores the message associated with each interrupt.
  */
@@ -152,7 +154,7 @@ void handle_isr(interrupt_registers_t r) {
 }
 
 // NEW STUFF
-void register_interrupt_handler(u8 n, isr_t *handler) {
+void register_interrupt_handler(u8 n, isr_t handler) {
     interrupt_handlers[n] = handler;
 }
 

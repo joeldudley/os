@@ -48,9 +48,9 @@ prep_irq_handler:
 
 ; Interrupt handlers.
 
-; We don't get information about which interrupt was called when the handler is run, so we need to  
+; We don't get information about which interrupt was called when the handler is run, so we need to
 ; create a different handler for each interrupt.
-; Some interrupts push an error code onto the stack while others don't. We will push a dummy error 
+; Some interrupts push an error code onto the stack while others don't. We will push a dummy error
 ; code onto the stack for the latter to ensure that all interrupts have the same stack structure.
 
 ; 0: Divide By Zero Exception
