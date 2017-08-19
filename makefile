@@ -16,6 +16,10 @@ OBJECTS := ${patsubst kernel/%.o,build/%.o,$(OBJECTS)}
 OBJECTS := ${patsubst cpu/%.o,build/%.o,$(OBJECTS)}
 OBJECTS := ${patsubst bootsector/%.o,build/%.o,$(OBJECTS)}
 
+CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
+GDB = /usr/local/i386elfgcc/bin/i386-elf-gdb
+CFLAGS = -g
+
 # Runs the operating system.
 run: clean build/os-image.bin
 	qemu-system-i386 -drive format=raw,file=build/os-image.bin,index=0,if=floppy
@@ -24,7 +28,7 @@ run: clean build/os-image.bin
 debug: clean build/os-image.bin build/kernel_main.elf
 	# The `-s` flag waits for a gdb connection on TCP port 1234.
 	qemu-system-i386 -s -drive format=raw,file=build/os-image.bin,index=0,if=floppy &
-	/usr/local/i386elfgcc/bin/i386-elf-gdb -ex "target remote localhost:1234" -ex "symbol-file build/kernel_main.elf"
+	${GDB} -ex "target remote localhost:1234" -ex "symbol-file build/kernel_main.elf"
 
 # Deletes any existing build files.
 clean:
@@ -56,4 +60,4 @@ build/%.o: */%.asm
 # Compiles all .c files in .o format.
 build/%.o: */%.c
 	# The `-g` flag compiles the files with debug information.
-	i386-elf-gcc -g -ffreestanding -c $^ -o $@
+	${CC} ${CFLAGS} -ffreestanding -c $^ -o $@

@@ -23,7 +23,7 @@ typedef struct {
        * Bit 7: Set to 0 for unused interrupts */
     u8 flags;
     u16 high_offset;                    // Higher 16 bits of the interrupt service routine's address.
-} __attribute__((packed)) idt_handler_t ;  // `packed` prevents the compiler from padding the struct.
+} __attribute__((packed)) interrupt_handler_t ;  // `packed` prevents the compiler from padding the struct.
 
 // An Interrupt Table Descriptor.
 typedef struct {
@@ -39,46 +39,67 @@ typedef struct {
    u32 eip, cs, eflags, useresp, ss;            // Automatically pushed by the processor.
 } interrupt_registers_t;
 
-idt_handler_t idt_handlers[NUM_IDT_ENTRIES];    // Our array of interrupt handlers.
+interrupt_handler_t interrupt_gates[NUM_IDT_ENTRIES];    // Our array of interrupt handlers.
 idt_t idt;                 						// Our Interrupt Table Descriptor.
 
-void handle_interrupt(interrupt_registers_t r);
-void add_interrupt_handler(int n, u32 handler);
-void load_idt();
 void build_and_load_idt();
+void add_interrupt_gate(int n, u32 handler);
+void load_idt();
+void handle_interrupt(interrupt_registers_t r);
 
-/* Interrupt service routines reserved for CPU exceptions. */
-extern void interrupt0();
-extern void interrupt1();
-extern void interrupt2();
-extern void interrupt3();
-extern void interrupt4();
-extern void interrupt5();
-extern void interrupt6();
-extern void interrupt7();
-extern void interrupt8();
-extern void interrupt9();
-extern void interrupt10();
-extern void interrupt11();
-extern void interrupt12();
-extern void interrupt13();
-extern void interrupt14();
-extern void interrupt15();
-extern void interrupt16();
-extern void interrupt17();
-extern void interrupt18();
-extern void interrupt19();
-extern void interrupt20();
-extern void interrupt21();
-extern void interrupt22();
-extern void interrupt23();
-extern void interrupt24();
-extern void interrupt25();
-extern void interrupt26();
-extern void interrupt27();
-extern void interrupt28();
-extern void interrupt29();
-extern void interrupt30();
-extern void interrupt31();
+typedef void (*isr_t)(registers_t);
+isr_t interrupt_handlers[256];
+
+/* Interrupt handler definitions. */
+extern void isr0();
+extern void isr1();
+extern void isr2();
+extern void isr3();
+extern void isr4();
+extern void isr5();
+extern void isr6();
+extern void isr7();
+extern void isr8();
+extern void isr9();
+extern void isr10();
+extern void isr11();
+extern void isr12();
+extern void isr13();
+extern void isr14();
+extern void isr15();
+extern void isr16();
+extern void isr17();
+extern void isr18();
+extern void isr19();
+extern void isr20();
+extern void isr21();
+extern void isr22();
+extern void isr23();
+extern void isr24();
+extern void isr25();
+extern void isr26();
+extern void isr27();
+extern void isr28();
+extern void isr29();
+extern void isr30();
+extern void isr31();
+
+/* Interrupt request definitions. */
+extern void irq0();
+extern void irq1();
+extern void irq2();
+extern void irq3();
+extern void irq4();
+extern void irq5();
+extern void irq6();
+extern void irq7();
+extern void irq8();
+extern void irq9();
+extern void irq10();
+extern void irq11();
+extern void irq12();
+extern void irq13();
+extern void irq14();
+extern void irq15();
 
 #endif
