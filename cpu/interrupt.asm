@@ -1,26 +1,26 @@
-[extern isr_handler]
+[extern handle_interrupt]
 
-isr_prep:              ; Prepares the CPU to handle an interrupt.
-	pusha              ; Saves the CPU's current state.
-	mov ax, ds         ; Lower 16-bits of eax = ds.
-	push eax           ; Save the data segment descriptor.
-	mov ax, 0x10       ; Kernel data segment descriptor.
-	mov ds, ax         ;   "
-	mov es, ax         ;   "
-	mov fs, ax         ;   "
-	mov gs, ax         ;   "
+prep_interrupt:            ; Prepares the CPU to handle an interrupt.
+	pusha                  ; Saves the CPU's current state.
+	mov ax, ds             ; Lower 16-bits of eax = ds.
+	push eax               ; Save the data segment descriptor.
+	mov ax, 0x10           ; Kernel data segment descriptor.
+	mov ds, ax             ;   "
+	mov es, ax             ;   "
+	mov fs, ax             ;   "
+	mov gs, ax             ;   "
 	
-	call isr_handler   ; Calls the C interrupt handler.
+	call handle_interrupt  ; Calls the C interrupt handler.
 	
-	pop eax            ; Restores the CPU's state.
-	mov ds, ax         ;   "
-	mov es, ax         ;   "
-	mov fs, ax         ;   "
-	mov gs, ax         ;   "
-	popa               ;   "
-	add esp, 8         ; Cleans up the pushed error code and pushed ISR number.
-	sti                ;   "
-	iret               ; Pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP.
+	pop eax                ; Restores the CPU's state.
+	mov ds, ax             ;   "
+	mov es, ax             ;   "
+	mov fs, ax             ;   "
+	mov gs, ax             ;   "
+	popa                   ;   "
+	add esp, 8             ; Cleans up the pushed error code and pushed interrupt number.
+	sti                    ;   "
+	iret                   ; Pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP.
 	
 ; We don't get information about which interrupt was called when the handler is run, so we need to  
 ; create a different handler for each interrupt.
@@ -28,251 +28,251 @@ isr_prep:              ; Prepares the CPU to handle an interrupt.
 ; code onto the stack for the latter to ensure that all interrupts have the same stack structure.
 
 ; 0: Divide By Zero Exception
-global isr0
-isr0:
+global interrupt0
+interrupt0:
     cli
     push byte 0
     push byte 0
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 1: Debug Exception
-global isr1
-isr1:
+global interrupt1
+interrupt1:
     cli
     push byte 0
     push byte 1
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 2: Non Maskable Interrupt Exception
-global isr2
-isr2:
+global interrupt2
+interrupt2:
     cli
     push byte 0
     push byte 2
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 3: Int 3 Exception
-global isr3
-isr3:
+global interrupt3
+interrupt3:
     cli
     push byte 0
     push byte 3
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 4: INTO Exception
-global isr4
-isr4:
+global interrupt4
+interrupt4:
     cli
     push byte 0
     push byte 4
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 5: Out of Bounds Exception
-global isr5
-isr5:
+global interrupt5
+interrupt5:
     cli
     push byte 0
     push byte 5
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 6: Invalid Opcode Exception
-global isr6
-isr6:
+global interrupt6
+interrupt6:
     cli
     push byte 0
     push byte 6
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 7: Coprocessor Not Available Exception
-global isr7
-isr7:
+global interrupt7
+interrupt7:
     cli
     push byte 0
     push byte 7
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 8: Double Fault Exception
-global isr8
-isr8:
+global interrupt8
+interrupt8:
     cli
     push byte 8        ; Pushes an error code onto the stack.
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 9: Coprocessor Segment Overrun Exception
-global isr9
-isr9:
+global interrupt9
+interrupt9:
     cli
     push byte 0
     push byte 9
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 10: Bad TSS Exception
-global isr10
-isr10:
+global interrupt10
+interrupt10:
     cli
     push byte 10       ; Pushes an error code onto the stack.
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 11: Segment Not Present Exception
-global isr11
-isr11:
+global interrupt11
+interrupt11:
     cli
     push byte 11       ; Pushes an error code onto the stack.
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 12: Stack Fault Exception
-global isr12
-isr12:
+global interrupt12
+interrupt12:
     cli
     push byte 12       ; Pushes an error code onto the stack.
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 13: General Protection Fault Exception
-global isr13
-isr13:
+global interrupt13
+interrupt13:
     cli
     push byte 13       ; Pushes an error code onto the stack.
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 14: Page Fault Exception
-global isr14
-isr14:
+global interrupt14
+interrupt14:
     cli
     push byte 14       ; Pushes an error code onto the stack.
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 15: Reserved Exception
-global isr15
-isr15:
+global interrupt15
+interrupt15:
     cli
     push byte 0
     push byte 15
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 16: Floating Point Exception
-global isr16
-isr16:
+global interrupt16
+interrupt16:
     cli
     push byte 0
     push byte 16
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 17: Alignment Check Exception
-global isr17
-isr17:
+global interrupt17
+interrupt17:
     cli
     push byte 0
     push byte 17
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 18: Machine Check Exception
-global isr18
-isr18:
+global interrupt18
+interrupt18:
     cli
     push byte 0
     push byte 18
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 19: Reserved
-global isr19
-isr19:
+global interrupt19
+interrupt19:
     cli
     push byte 0
     push byte 19
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 20: Reserved
-global isr20
-isr20:
+global interrupt20
+interrupt20:
     cli
     push byte 0
     push byte 20
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 21: Reserved
-global isr21
-isr21:
+global interrupt21
+interrupt21:
     cli
     push byte 0
     push byte 21
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 22: Reserved
-global isr22
-isr22:
+global interrupt22
+interrupt22:
     cli
     push byte 0
     push byte 22
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 23: Reserved
-global isr23
-isr23:
+global interrupt23
+interrupt23:
     cli
     push byte 0
     push byte 23
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 24: Reserved
-global isr24
-isr24:
+global interrupt24
+interrupt24:
     cli
     push byte 0
     push byte 24
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 25: Reserved
-global isr25
-isr25:
+global interrupt25
+interrupt25:
     cli
     push byte 0
     push byte 25
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 26: Reserved
-global isr26
-isr26:
+global interrupt26
+interrupt26:
     cli
     push byte 0
     push byte 26
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 27: Reserved
-global isr27
-isr27:
+global interrupt27
+interrupt27:
     cli
     push byte 0
     push byte 27
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 28: Reserved
-global isr28
-isr28:
+global interrupt28
+interrupt28:
     cli
     push byte 0
     push byte 28
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 29: Reserved
-global isr29
-isr29:
+global interrupt29
+interrupt29:
     cli
     push byte 0
     push byte 29
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 30: Reserved
-global isr30
-isr30:
+global interrupt30
+interrupt30:
     cli
     push byte 0
     push byte 30
-    jmp isr_prep
+    jmp prep_interrupt
 
 ; 31: Reserved
-global isr31
-isr31:
+global interrupt31
+interrupt31:
     cli
     push byte 0
     push byte 31
-    jmp isr_prep
+    jmp prep_interrupt

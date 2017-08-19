@@ -1,15 +1,14 @@
 #include "screen.h"
 #include "util.h"
-#include "../cpu/isr.h"
 #include "../cpu/idt.h"
 
 /** 
  * Testing interrupts.
  */
 void main() {
-    isr_install();
+    build_idt();
     // Test the interrupts.
     // All contant-value operands in inline ASM must be prefixed with `$`.
-    asm __volatile__("int $2");
-    asm __volatile__("int $3");
+    asm volatile("int $2");
+    asm volatile("int $3");
 }
