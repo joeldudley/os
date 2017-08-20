@@ -1,24 +1,22 @@
 #include "keyboard.h"
+#include "../interrupts/idt.h"
+#include "screen.h"
+#include "../utils/ports.h"
+#include "../utils/util.h"
 
-#include "../kernel/ports.h"
-#include "../kernel/screen.h"
-#include "../kernel/util.h"
-#include "idt.h"
-#include "types.h"
-
-// Private functions.
-void keyboard_callback();
+// Private function declarations.
+void keyboard_callback(interrupt_args_t _);
 void print_letter(u8 scancode);
 
 // Public functions.
-
+// TODO: What is this doing?
 void init_keyboard() {
    register_interrupt_handler(IRQ1, keyboard_callback);
 }
 
 // Private functions.
-
-void keyboard_callback(interrupt_registers_t regs) {
+// TODO: What is this doing?
+void keyboard_callback(interrupt_args_t _) {
     /* The PIC leaves us the scancode in port 0x60 */
     u8 scancode = port_read_byte(0x60);
     char *sc_ascii;
@@ -30,6 +28,7 @@ void keyboard_callback(interrupt_registers_t regs) {
     print("\n");
 }
 
+// TODO: What is this doing?
 void print_letter(u8 scancode) {
     switch (scancode) {
         case 0x0:

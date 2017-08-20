@@ -7,10 +7,10 @@
 
 # We print a variable using `$(info [${VAR}])`.
 
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h)
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c interrupts/*.c utils/*.c)
+HEADERS = $(wildcard kernel/*.h drivers/*.h interrupts/*.h utils/*.h)
 # Nice syntax for file extension replacement
-OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o} 
+OBJ = ${C_SOURCES:.c=.o interrupts/interrupt.o}
 
 # Change this if your cross-compiler is somewhere else
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
@@ -31,8 +31,8 @@ debug: clean os-image.bin kernel.elf
 
 # Deletes any existing build files.
 clean:
-	rm -rf *.bin *.dis *.o os-image.bin *.elf
-	rm -rf kernel/*.o bootsector/*.bin bootsector/*.o cpu/*.o
+	rm -rf *.bin *.elf
+	rm -rf kernel/*.o drivers/*.o interrupts/*.o utils/*.o bootsector/*.bin bootsector/*.o
 	
 # The targets below should not be invoked directly.
 

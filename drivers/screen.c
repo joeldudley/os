@@ -1,10 +1,37 @@
 #include "screen.h"
 
-#include "../cpu/types.h"
-#include "ports.h"
-#include "util.h"
+#include "../utils/types.h"
+#include "../utils/ports.h"
+#include "../utils/util.h"
 
-// Private functions.
+// Constants.
+
+// Base address of text screen video memory for colour monitors.
+#define VIDEO_ADDRESS (char*) 0xb8000
+
+#define SCREEN_COLS 80
+#define SCREEN_ROWS 25
+#define SCREEN_SIZE (SCREEN_COLS * SCREEN_ROWS)
+#define MAX_LOC (2 * SCREEN_SIZE)
+
+// Text mode memory uses two bytes for every character:
+//   * An ASCII code byte
+//   * An attribute byte
+// Here are two standard values for the attribute byte:
+#define WHITE_ON_BLACK 0x0f
+#define RED_ON_WHITE 0xf4
+
+// The VGA controller has two registers:
+//   * A data register where data is placed.
+//   * An index register indicating the type of the data in the VGA data register.
+#define VGA_IDX_PORT 0x3d4
+#define VGA_DATA_PORT 0x3d5
+
+// VGA index register indices for the cursor location:
+#define CURSOR_LOCATION_REGISTER_H 14
+#define CURSOR_LOCATION_REGISTER_L 15
+
+// Private function declarations.
 int get_cursor_loc();
 void set_cursor_loc(int location);
 int print_char(char c, int col, int row, char attr);
@@ -84,7 +111,7 @@ int print_char(char c, int col, int row, char attr) {
     if (!attr) attr = WHITE_ON_BLACK;
 
     // Error control: print a red 'E' if the co-ordinates aren't right.
-    if (col >= MAX_COLS || row >= MAX_ROWS) {
+    if (col >= SCREEN_COLS || row >= SCREEN_ROWS) {
         vid_mem[MAX_LOC - 2] = 'E';
         vid_mem[MAX_LOC - 1] = RED_ON_WHITE;
         return coords_to_loc(col, row);
@@ -110,19 +137,19 @@ int print_char(char c, int col, int row, char attr) {
     // Scroll if the location exceeds the screen size.
     if (location >= MAX_LOC) {
         // We copy every row into the row above, deleting the first row.
-        for (int i = 1; i < MAX_ROWS; i++) 
+        for (int i = 1; i < SCREEN_ROWS; i++) 
             memory_copy(
                 VIDEO_ADDRESS + coords_to_loc(0, i),
                 VIDEO_ADDRESS + coords_to_loc(0, i - 1),
-                MAX_COLS * 2);
+                SCREEN_COLS * 2);
 
         // We clear the last row.
-        char *last_line = VIDEO_ADDRESS + coords_to_loc(0, MAX_ROWS - 1);
-        for (int i = 0; i < MAX_COLS * 2; i++)
+        char *last_line = VIDEO_ADDRESS + coords_to_loc(0, SCREEN_ROWS - 1);
+        for (int i = 0; i < SCREEN_COLS * 2; i++)
             last_line[i] = 0;
 
         // We calculate the new cursor location.
-        location -= 2 * MAX_COLS;
+        location -= 2 * SCREEN_COLS;
     }
 
     // We move the cursor down onto the newly-blank line.
@@ -172,7 +199,7 @@ void set_cursor_loc(int location) {
  * returns: The corresponding integer location.
  */
 int coords_to_loc(int col, int row) { 
-    return 2 * (row * MAX_COLS + col); 
+    return 2 * (row * SCREEN_COLS + col); 
 }
 
 /**
@@ -183,7 +210,7 @@ int coords_to_loc(int col, int row) {
  * returns: The corresponding screen column.
  */
 int loc_to_col(int location) { 
-    return (location - (loc_to_row(location) * 2 * MAX_COLS)) / 2; 
+    return (location - (loc_to_row(location) * 2 * SCREEN_COLS)) / 2; 
 }
 
 /**
@@ -194,5 +221,5 @@ int loc_to_col(int location) {
  * returns: The corresponding screen row.
  */
 int loc_to_row(int location) { 
-    return location / (2 * MAX_COLS); 
+    return location / (2 * SCREEN_COLS); 
 }

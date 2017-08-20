@@ -1,25 +1,24 @@
 #include "timer.h"
-
-#include "../kernel/ports.h"
-#include "../kernel/screen.h"
-#include "../kernel/util.h"
-#include "idt.h"
-#include "types.h"
+#include "../interrupts/idt.h"
+#include "../utils/ports.h"
+#include "../utils/util.h"
+#include "screen.h"
 
 // Constants.
 u32 current_tick = 0;
+int clock_tick_rate = 1193180;
 
-// Private functions.
-void timer_callback(interrupt_registers_t regs);
+// Private functions declarations.
+void timer_callback(interrupt_args_t _);
 
 // Public functions.
-
+// TODO: What is this doing?
 void init_timer(u32 freq) {
     /* Install the function we just wrote */
     register_interrupt_handler(IRQ0, timer_callback);
 
     /* Get the PIT value: hardware clock at 1193180 Hz */
-    u32 divisor = 1193180 / freq;
+    u32 divisor = clock_tick_rate / freq;
     u8 low  = (u8)(divisor & 0xFF);
     u8 high = (u8)( (divisor >> 8) & 0xFF);
 
@@ -30,8 +29,8 @@ void init_timer(u32 freq) {
 }
 
 // Private functions.
-
-void timer_callback(interrupt_registers_t regs) {
+// TODO: What is this doing?
+void timer_callback(interrupt_args_t _) {
 	current_tick++;
 
     char current_tick_ascii[256];

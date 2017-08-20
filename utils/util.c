@@ -1,25 +1,34 @@
 #include "util.h"
 
+// Public functions.
+
 /**
  * Copies an array.
  * 
- * *src: The input array.
- * *dest: The output array.
- * nbytes: The length of the array.
+ * *src: The array to be copied.
+ * *dest: The copied array.
+ * len: The length of the array.
  */
-void memory_copy(char *src, char *dest, int nbytes) {
-    for (int i = 0; i < nbytes; i++) {
+void memory_copy(const char *src, char *dest, int len) {
+    for (int i = 0; i < len; i++) {
         *(dest + i) = *(src + i);
     }
 }
 
-void memory_set(u8 *dest, u8 val, u32 len) {
-	u8 *temp = (u8 *) dest;
+/**
+ * Sets every element of an array to a value.
+ *
+ * *dest: The array to be updated.
+ * val: The value to set every element of the array to.
+ * len: The length of the array.
+ */
+void memory_set(u8 *dest, u8 val, int len) {
+	u8 *temp = dest;
 	for (; len != 0; len--) *temp++ = val;
 }
 
 /**
- * Converts an int to its ASCII equivalent.
+ * Converts an int to its ASCII representation.
  *
  * n: The integer to convert.
  * str[]: The output char array.
@@ -51,16 +60,29 @@ void int_to_ascii(int n, char str[]) {
     reverse(str);
 }
 
+/**
+ * Reverses the contents of an array.
+ *
+ * str[]: The array to reverse.
+ */
 void reverse(char str[]) {
-	int c, i, j;
+	char current_char;
+    int i, j;
 	for (i = 0, j = strlen(str) - 1; i < j; i++, j--) {
-		c = str[i];
+		current_char = str[i];
 		str[i] = str[j];
-		str[j] = c;
+		str[j] = current_char;
 	}
 }
 
-int strlen(char str[]) {
+/**
+ * Calculates the length of a string.
+ *
+ * str[]: The string for which to calculate the length.
+ *
+ * returns: The string's length.
+ */
+int strlen(const char str[]) {
 	int i = 0;
 	while (str[i] != '\0') ++i;
 	return i;

@@ -1,14 +1,23 @@
 #include "idt.h"
 
-#include "../kernel/ports.h"
-#include "../kernel/screen.h"
-#include "../kernel/util.h"
+#include "../utils/ports.h"
+#include "../drivers/screen.h"
+#include "../utils/util.h"
+
+// Constants.
+#define KERNEL_CS 0x08
+#define NUM_IDT_ENTRIES 256
+
+// Variables.
+idt_t idt;                 						// The Interrupt Table Descriptor.
+interrupt_t interrupts[NUM_IDT_ENTRIES];        // The IDT's array of interrupts.
+isr_t interrupt_handlers[NUM_IDT_ENTRIES];		// An array of pointers to interrupt handlers.
 
 // Private function declarations.
-void add_interrupt_gate(int n, u32 handler);
+void add_interrupt_gate(int idx, u32 handler);
 void load_idt();
-void handle_isr(interrupt_registers_t r);
-void handle_irq(interrupt_registers_t r);
+void handle_isr(interrupt_args_t r);
+void handle_irq(interrupt_args_t r);
 
 // Public functions.
 
@@ -84,22 +93,31 @@ void build_and_load_idt() {
     load_idt();
 }
 
-void register_interrupt_handler(u8 n, isr_t handler) {
-    interrupt_handlers[n] = handler;
+/**
+ * Adds a handler to the array of interrupt handlers.
+ *
+ * idx: The index of the interrupt for which we want to add a handler.
+ * handler: A pointer to the handler function.
+ */
+void register_interrupt_handler(u8 idx, isr_t handler) {
+    interrupt_handlers[idx] = handler;
 }
 
 // Private functions.
 
 /**
  * Adds a kernel-privilege, used 32-bit interrupt gate to the IDT.
+ *
+ * idx: The index of the interrupt for which we are adding a gate.
+ * handler: The interrupt gate definition.
  */
-void add_interrupt_gate(int n, u32 handler) {
-	interrupts[n].low_offset = low_16(handler);
-	interrupts[n].sel = KERNEL_CS;
-	interrupts[n].always0 = 0;
+void add_interrupt_gate(int idx, u32 handler) {
+	interrupts[idx].low_offset = low_16(handler);
+	interrupts[idx].sel = KERNEL_CS;
+	interrupts[idx].always0 = 0;
     // A kernel-privilege, used 32-bit interrupt gate.
-	interrupts[n].flags = 0x8E;
-	interrupts[n].high_offset = high_16(handler);
+	interrupts[idx].flags = 0x8E;
+	interrupts[idx].high_offset = high_16(handler);
 }
 
 /**
@@ -113,7 +131,7 @@ void load_idt() {
 }
 
 /**
- * Stores the message associated with each interrupt.
+ * An array of the message associated with each interrupt.
  */
 char *exception_messages[] = {
     "Division By Zero",
@@ -155,8 +173,10 @@ char *exception_messages[] = {
 
 /**
  * Handles an interrupt.
+ *
+ * r: The arguments pushed before handling the interrupt.
  */
-void handle_isr(interrupt_registers_t r) {
+void handle_isr(interrupt_args_t r) {
     print("Received an interrupt: ");
     char interrupt_number[3];
     int_to_ascii(r.interrupt_no, interrupt_number);
@@ -166,7 +186,12 @@ void handle_isr(interrupt_registers_t r) {
     print("\n");
 }
 
-void handle_irq(interrupt_registers_t r) {
+/**
+ * Handles an interrupt request.
+ *
+ * r: The arguments pushed before handling the interrupt request.
+ */
+void handle_irq(interrupt_args_t r) {
     /* After every interrupt we need to send an EOI to the PICs
      * or they will not send another interrupt again */
 	if (r.interrupt_no >= 40) port_write_byte(0xA0, 0x20); /* slave */

@@ -1,11 +1,7 @@
 #ifndef IDT_H
 #define IDT_H
 
-#include "types.h"
-
-// Constants.
-#define KERNEL_CS 0x08
-#define NUM_IDT_ENTRIES 256
+#include "../utils/types.h"
 
 #define IRQ0 32
 #define IRQ1 33
@@ -56,19 +52,14 @@ typedef struct {
    u32 edi, esi, ebp, esp, ebx, edx, ecx, eax;  // Pushed by `pusha`.
    u32 interrupt_no, err_code;                  // Interrupt number and error code (if applicable).
    u32 eip, cs, eflags, useresp, ss;            // Automatically pushed by the processor.
-} interrupt_registers_t;
+} interrupt_args_t;
 
-typedef void (*isr_t) (interrupt_registers_t);  // A pointer to a handler function.
-
-// Variables.
-idt_t idt;                 						// The Interrupt Table Descriptor.
-interrupt_t interrupts[NUM_IDT_ENTRIES];        // The IDT's array of interrupts.
-isr_t interrupt_handlers[NUM_IDT_ENTRIES];		// An array of pointers to interrupt handlers.
+typedef void (*isr_t) (interrupt_args_t);  // A pointer to a handler function.
 
 // Public functions.
 
 void build_and_load_idt();
-void register_interrupt_handler(u8 n, isr_t handler);
+void register_interrupt_handler(u8 idx, isr_t handler);
 
 // Interrupt definitions.
 extern void isr0();
