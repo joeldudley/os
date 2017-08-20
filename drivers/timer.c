@@ -21,7 +21,7 @@ void timer_callback(interrupt_args_t _);
  * divisor: At what fraction of the PIT tick rate to send IRQ0s.
  */
 void init_timer(u32 divisor) {
-    // Set our function to handle IRQ0s.
+    // Sets a handler for IRQ0s.
     register_interrupt_handler(IRQ0, timer_callback);
 
     // Calculate the desired IRQ0 frequency.
@@ -40,7 +40,7 @@ void init_timer(u32 divisor) {
 /**
  * Called when IRQ0s are made.
  *
- * interrupt_args_t _: Unused but required.
+ * _: Unused but required.
  */
 void timer_callback(interrupt_args_t _) {
 	current_tick++;

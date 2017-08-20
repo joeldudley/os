@@ -9,26 +9,37 @@ void keyboard_callback(interrupt_args_t _);
 void print_letter(u8 scancode);
 
 // Public functions.
-// TODO: What is this doing?
+
+/**
+ * Sets a handler for IRQ1s.
+ */
 void init_keyboard() {
+   // Sets a handler for IRQ1s.
    register_interrupt_handler(IRQ1, keyboard_callback);
 }
 
 // Private functions.
-// TODO: What is this doing?
+
+/**
+ * Prints the string corresponding to a keyboard button press.
+ *
+ * _: Unused but required.
+ */
 void keyboard_callback(interrupt_args_t _) {
-    /* The PIC leaves us the scancode in port 0x60 */
+    print("Keyboard: ");
+
+    // When a key is pressed, its scancode is placed in port 0x60.
     u8 scancode = port_read_byte(0x60);
-    char *sc_ascii;
-    int_to_ascii(scancode, sc_ascii);
-    print("Keyboard scancode: ");
-    print(sc_ascii);
-    print(", ");
     print_letter(scancode);
+
     print("\n");
 }
 
-// TODO: What is this doing?
+/**
+ * Prints the string corresponding to a specific keyboard scancode.
+ *
+ * scancode: The keyboard scancode.
+ */
 void print_letter(u8 scancode) {
     switch (scancode) {
         case 0x0:

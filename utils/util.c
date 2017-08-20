@@ -66,7 +66,7 @@ void int_to_ascii(int n, char str[]) {
  * str[]: The array to reverse.
  */
 void reverse(char str[]) {
-	char current_char;
+	int current_char;
     int i, j;
 	for (i = 0, j = strlen(str) - 1; i < j; i++, j--) {
 		current_char = str[i];
@@ -75,13 +75,6 @@ void reverse(char str[]) {
 	}
 }
 
-/**
- * Calculates the length of a string.
- *
- * str[]: The string for which to calculate the length.
- *
- * returns: The string's length.
- */
 int strlen(const char str[]) {
 	int i = 0;
 	while (str[i] != '\0') ++i;
