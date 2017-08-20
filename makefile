@@ -32,7 +32,7 @@ debug: clean os-image.bin kernel.elf
 # Deletes any existing build files.
 clean:
 	rm -rf *.bin *.dis *.o os-image.bin *.elf
-	rm -rf kernel/*.o bootsector/*.bin drivers/*.o bootsector/*.o cpu/*.o
+	rm -rf kernel/*.o bootsector/*.bin bootsector/*.o cpu/*.o
 	
 # The targets below should not be invoked directly.
 

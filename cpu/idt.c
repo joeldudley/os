@@ -4,46 +4,13 @@
 #include "../kernel/screen.h"
 #include "../kernel/util.h"
 
-/**
- * Stores the message associated with each interrupt.
- */
-char *exception_messages[] = {
-    "Division By Zero",
-    "Debug",
-    "Non Maskable Interrupt",
-    "Breakpoint",
-    "Into Detected Overflow",
-    "Out of Bounds",
-    "Invalid Opcode",
-    "No Coprocessor",
+// Private function declarations.
+void add_interrupt_gate(int n, u32 handler);
+void load_idt();
+void handle_isr(interrupt_registers_t r);
+void handle_irq(interrupt_registers_t r);
 
-    "Double Fault",
-    "Coprocessor Segment Overrun",
-    "Bad TSS",
-    "Segment Not Present",
-    "Stack Fault",
-    "General Protection Fault",
-    "Page Fault",
-    "Unknown Interrupt",
-
-    "Coprocessor Fault",
-    "Alignment Check",
-    "Machine Check",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved"
-};
+// Public functions.
 
 /**
  * Adds the interrupt handlers and interrupt requests to the IDT and loads the IDT.
@@ -117,6 +84,12 @@ void build_and_load_idt() {
     load_idt();
 }
 
+void register_interrupt_handler(u8 n, isr_t handler) {
+    interrupt_handlers[n] = handler;
+}
+
+// Private functions.
+
 /**
  * Adds a kernel-privilege, used 32-bit interrupt gate to the IDT.
  */
@@ -140,6 +113,47 @@ void load_idt() {
 }
 
 /**
+ * Stores the message associated with each interrupt.
+ */
+char *exception_messages[] = {
+    "Division By Zero",
+    "Debug",
+    "Non Maskable Interrupt",
+    "Breakpoint",
+    "Into Detected Overflow",
+    "Out of Bounds",
+    "Invalid Opcode",
+    "No Coprocessor",
+
+    "Double Fault",
+    "Coprocessor Segment Overrun",
+    "Bad TSS",
+    "Segment Not Present",
+    "Stack Fault",
+    "General Protection Fault",
+    "Page Fault",
+    "Unknown Interrupt",
+
+    "Coprocessor Fault",
+    "Alignment Check",
+    "Machine Check",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved",
+    "Reserved"
+};
+
+/**
  * Handles an interrupt.
  */
 void handle_isr(interrupt_registers_t r) {
@@ -150,11 +164,6 @@ void handle_isr(interrupt_registers_t r) {
     print("\n");
     print(exception_messages[r.interrupt_no]);
     print("\n");
-}
-
-// NEW STUFF
-void register_interrupt_handler(u8 n, isr_t handler) {
-    interrupt_handlers[n] = handler;
 }
 
 void handle_irq(interrupt_registers_t r) {

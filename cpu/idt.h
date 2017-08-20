@@ -7,6 +7,25 @@
 #define KERNEL_CS 0x08
 #define NUM_IDT_ENTRIES 256
 
+#define IRQ0 32
+#define IRQ1 33
+#define IRQ2 34
+#define IRQ3 35
+#define IRQ4 36
+#define IRQ5 37
+#define IRQ6 38
+#define IRQ7 39
+#define IRQ8 40
+#define IRQ9 41
+#define IRQ10 42
+#define IRQ11 43
+#define IRQ12 44
+#define IRQ13 45
+#define IRQ14 46
+#define IRQ15 47
+
+// Typedefs.
+
 // An interrupt handler.
 typedef struct {
     u16 low_offset;                     // Lower 16 bits of the interrupt service routine's address.
@@ -39,19 +58,19 @@ typedef struct {
    u32 eip, cs, eflags, useresp, ss;            // Automatically pushed by the processor.
 } interrupt_registers_t;
 
+typedef void (*isr_t) (interrupt_registers_t);  // A pointer to a handler function.
+
+// Variables.
 idt_t idt;                 						// The Interrupt Table Descriptor.
 interrupt_t interrupts[NUM_IDT_ENTRIES];        // The IDT's array of interrupts.
-typedef void (*isr_t) (interrupt_registers_t);  // A pointer to a handler function.
 isr_t interrupt_handlers[NUM_IDT_ENTRIES];		// An array of pointers to interrupt handlers.
 
-void build_and_load_idt();
-void add_interrupt_gate(int n, u32 handler);
-void load_idt();
-void handle_isr(interrupt_registers_t r);
-void register_interrupt_handler(u8 n, isr_t handler);
-void handle_irq(interrupt_registers_t r);
+// Public functions.
 
-/* Interrupt handler definitions. */
+void build_and_load_idt();
+void register_interrupt_handler(u8 n, isr_t handler);
+
+// Interrupt definitions.
 extern void isr0();
 extern void isr1();
 extern void isr2();
@@ -85,7 +104,7 @@ extern void isr29();
 extern void isr30();
 extern void isr31();
 
-/* Interrupt request definitions. */
+// Interrupt request definitions.
 extern void irq0();
 extern void irq1();
 extern void irq2();
@@ -102,23 +121,5 @@ extern void irq12();
 extern void irq13();
 extern void irq14();
 extern void irq15();
-
-// If these are lower case, they'll clash with the function names.
-#define IRQ0 32
-#define IRQ1 33
-#define IRQ2 34
-#define IRQ3 35
-#define IRQ4 36
-#define IRQ5 37
-#define IRQ6 38
-#define IRQ7 39
-#define IRQ8 40
-#define IRQ9 41
-#define IRQ10 42
-#define IRQ11 43
-#define IRQ12 44
-#define IRQ13 45
-#define IRQ14 46
-#define IRQ15 47
 
 #endif

@@ -1,2 +1,3 @@
 - split source files into public and private functions, conceal the private ones
 - review keyboard, timer and irq code
+- add proper functions docstrings

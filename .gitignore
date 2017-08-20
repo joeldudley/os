@@ -1,8 +1,10 @@
 .DS_Store
+CMakeLists.txt
+cmake-build-debug/
 *.bin
 *.o
-build/
-*.swp
+
 .cproject
 .project
 .settings/
+.idea/
