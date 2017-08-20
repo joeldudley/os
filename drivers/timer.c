@@ -6,30 +6,42 @@
 
 // Constants.
 u32 current_tick = 0;
-int clock_tick_rate = 1193180;
+int pit_tick_rate = 1193180;
+u16 pit_command_port = 0x43;
+u16 pit_channel_0_data_port = 0x40;
 
 // Private functions declarations.
 void timer_callback(interrupt_args_t _);
 
 // Public functions.
-// TODO: What is this doing?
-void init_timer(u32 freq) {
-    /* Install the function we just wrote */
+
+/**
+ * Sets IRQ0s to be made at a specific frequency.
+ *
+ * divisor: At what fraction of the PIT tick rate to send IRQ0s.
+ */
+void init_timer(u32 divisor) {
+    // Set our function to handle IRQ0s.
     register_interrupt_handler(IRQ0, timer_callback);
 
-    /* Get the PIT value: hardware clock at 1193180 Hz */
-    u32 divisor = clock_tick_rate / freq;
-    u8 low  = (u8)(divisor & 0xFF);
-    u8 high = (u8)( (divisor >> 8) & 0xFF);
+    // Calculate the desired IRQ0 frequency.
+    u32 irq0_rate = pit_tick_rate / divisor;
+    u8 low_irq0_rate = (u8) (irq0_rate & 0xFF);
+    u8 high_irq0_rate = (u8) ((irq0_rate >> 8) & 0xFF);
 
-    /* Send the command */
-    port_write_byte(0x43, 0x36); /* Command port */
-    port_write_byte(0x40, low);
-    port_write_byte(0x40, high);
+    // Set the PIT to make IRQ0s at the desired frequency.
+    port_write_byte(pit_command_port, 0x36);
+    port_write_byte(pit_channel_0_data_port, low_irq0_rate);
+    port_write_byte(pit_channel_0_data_port, high_irq0_rate);
 }
 
 // Private functions.
-// TODO: What is this doing?
+
+/**
+ * Called when IRQ0s are made.
+ *
+ * interrupt_args_t _: Unused but required.
+ */
 void timer_callback(interrupt_args_t _) {
 	current_tick++;
 
