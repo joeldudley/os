@@ -1,6 +1,5 @@
-#include "screen.h"
-#include "util.h"
 #include "../cpu/idt.h"
+#include "../cpu/keyboard.h"
 #include "../cpu/timer.h"
 
 /** 
@@ -12,6 +11,6 @@ void main() {
     asm volatile("sti");
     init_timer(50);
     /* Comment out the timer IRQ handler to read
-     * the keyboard IRQs easier */
-//    init_keyboard();
+     * the keyboard IRQs more easily. */
+    init_keyboard();
 }

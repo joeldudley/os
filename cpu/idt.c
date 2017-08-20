@@ -1,7 +1,8 @@
 #include "idt.h"
+
+#include "../kernel/ports.h"
 #include "../kernel/screen.h"
 #include "../kernel/util.h"
-#include "../kernel/ports.h"
 
 /**
  * Stores the message associated with each interrupt.

@@ -1,14 +1,34 @@
 #include "screen.h"
+
+#include "../cpu/types.h"
 #include "ports.h"
 #include "util.h"
 
-/* Private functions. */
+// Private functions.
 int get_cursor_loc();
 void set_cursor_loc(int location);
 int print_char(char c, int col, int row, char attr);
 int coords_to_loc(int col, int row);
 int loc_to_col(int location);
 int loc_to_row(int location);
+
+// Public functions.
+
+/**
+ * Clears the screen.
+ */
+void clear_screen() {
+    char *vid_mem = VIDEO_ADDRESS;
+
+    // We overwrite each video cell and reset its colour.
+    for (int i = 0; i < SCREEN_SIZE; i++) {
+        vid_mem[i * 2] = ' ';
+        vid_mem[i * 2 + 1] = WHITE_ON_BLACK;
+    }
+
+    // We move the cursor to the start of the screen.
+    set_cursor_loc(coords_to_loc(0, 0));
+}
 
 /**
  * Prints a string at the cursor's current location.
@@ -43,6 +63,8 @@ void print_at(char *str, int col, int row) {
         location = print_char(str[i], col, row, WHITE_ON_BLACK);
     }
 }
+
+// Private functions.
 
 /**
  * Prints a char at the specified (col, row) location, sets the cursor to the 
@@ -89,7 +111,7 @@ int print_char(char c, int col, int row, char attr) {
     if (location >= MAX_LOC) {
         // We copy every row into the row above, deleting the first row.
         for (int i = 1; i < MAX_ROWS; i++) 
-            char_array_copy(
+            memory_copy(
                 VIDEO_ADDRESS + coords_to_loc(0, i),
                 VIDEO_ADDRESS + coords_to_loc(0, i - 1),
                 MAX_COLS * 2);
@@ -139,22 +161,6 @@ void set_cursor_loc(int location) {
     // Write the low byte of the cursor's location.
     port_write_byte(VGA_IDX_PORT, CURSOR_LOCATION_REGISTER_L);
     port_write_byte(VGA_DATA_PORT, (u8) (location & 0xff));
-}
-
-/**
- * Clears the screen.
- */
-void clear_screen() {
-    char *vid_mem = VIDEO_ADDRESS;
-
-    // We overwrite each video cell and reset its colour.
-    for (int i = 0; i < SCREEN_SIZE; i++) {
-        vid_mem[i * 2] = ' ';
-        vid_mem[i * 2 + 1] = WHITE_ON_BLACK;
-    }
-
-    // We move the cursor to the start of the screen.
-    set_cursor_loc(coords_to_loc(0, 0));
 }
 
 /**

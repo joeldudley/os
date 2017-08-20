@@ -1,19 +1,18 @@
 #include "timer.h"
+
+#include "../kernel/ports.h"
 #include "../kernel/screen.h"
 #include "../kernel/util.h"
 #include "idt.h"
+#include "types.h"
 
-u32 tick = 0;
+// Constants.
+u32 current_tick = 0;
 
-static void timer_callback(interrupt_registers_t regs) {
-    tick++;
-    print("Tick: ");
+// Private functions.
+void timer_callback(interrupt_registers_t regs);
 
-    char tick_ascii[256];
-    int_to_ascii(tick, tick_ascii);
-    print(tick_ascii);
-    print("\n");
-}
+// Public functions.
 
 void init_timer(u32 freq) {
     /* Install the function we just wrote */
@@ -28,4 +27,17 @@ void init_timer(u32 freq) {
     port_write_byte(0x43, 0x36); /* Command port */
     port_write_byte(0x40, low);
     port_write_byte(0x40, high);
+}
+
+// Private functions.
+
+void timer_callback(interrupt_registers_t regs) {
+	current_tick++;
+
+    char current_tick_ascii[256];
+    int_to_ascii(current_tick, current_tick_ascii);
+
+    print("Tick: ");
+    print(current_tick_ascii);
+    print("\n");
 }

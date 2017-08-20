@@ -37,10 +37,10 @@ clean:
 # The targets below should not be invoked directly.
 
 # Concatenates the bootsector and kernal binaries into a single operating system binary.
-os-image.bin: bootsector/bootsector_main.bin kernel_main.bin
+os-image.bin: bootsector/bootsector.bin kernel.bin
 	cat $^ > os-image.bin
 
-kernel_main.bin: bootsector/call_kernel.o ${OBJ}
+kernel.bin: bootsector/call_kernel.o ${OBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
 
 # For debugging.
