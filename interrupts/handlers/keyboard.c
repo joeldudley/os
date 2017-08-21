@@ -1,8 +1,7 @@
 #include "keyboard.h"
-#include "../interrupts/idt.h"
-#include "screen.h"
-#include "../utils/ports.h"
-#include "../utils/util.h"
+#include "../idt.h"
+#include "../../drivers/screen.h"
+#include "../../utils/ports.h"
 
 // Private function declarations.
 void keyboard_callback(interrupt_args_t _);
@@ -28,7 +27,7 @@ void init_keyboard() {
 void keyboard_callback(interrupt_args_t _) {
     print("Keyboard: ");
 
-    // When a key is pressed, its scancode is placed in port 0x60.
+    // When a key is pressed, a scancode is placed in port 0x60.
     u8 scancode = port_read_byte(0x60);
     print_letter(scancode);
 
@@ -217,15 +216,18 @@ void print_letter(u8 scancode) {
             print("Spc");
             break;
         default:
-            /* 'keuyp' event corresponds to the 'keydown' + 0x80
-             * it may still be a scancode we haven't implemented yet, or
-             * maybe a control/escape sequence */
             if (scancode <= 0x7f) {
+                // Scancodes below 0x7f are unknown.
                 print("Unknown key down");
             } else if (scancode <= 0x39 + 0x80) {
-                print("key up ");
+                // The `key up` scancodes range from 0x80 to 0xB9 and are equal to the `key down`
+                // scancodes plus 0x80.
+                print("Key up ");
                 print_letter(scancode - 0x80);
-            } else print("Unknown key up");
+            } else {
+                // Scancodes above 0x80 are unknown.
+                print("Unknown key up");
+            }
             break;
     }
 }

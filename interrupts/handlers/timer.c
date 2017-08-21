@@ -1,8 +1,8 @@
 #include "timer.h"
-#include "../interrupts/idt.h"
-#include "../utils/ports.h"
-#include "../utils/util.h"
-#include "screen.h"
+#include "../idt.h"
+#include "../../utils/ports.h"
+#include "../../utils/util.h"
+#include "../../drivers/screen.h"
 
 // Constants.
 u32 current_tick = 0;

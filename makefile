@@ -7,8 +7,8 @@
 
 # We print a variable using `$(info [${VAR}])`.
 
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c interrupts/*.c utils/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h interrupts/*.h utils/*.h)
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c interrupts/*.c interrupts/handlers/*.c utils/*.c)
+HEADERS = $(wildcard kernel/*.h drivers/*.h interrupts/*.h interrupts/handlers/*.h utils/*.h)
 # Nice syntax for file extension replacement
 OBJ = ${C_SOURCES:.c=.o interrupts/interrupt.o}
 
@@ -32,7 +32,7 @@ debug: clean os-image.bin kernel.elf
 # Deletes any existing build files.
 clean:
 	rm -rf *.bin *.elf
-	rm -rf kernel/*.o drivers/*.o interrupts/*.o utils/*.o bootsector/*.bin bootsector/*.o
+	rm -rf kernel/*.o drivers/*.o interrupts/*.o interrupts/handlers/*.o utils/*.o bootsector/*.bin bootsector/*.o
 	
 # The targets below should not be invoked directly.
 

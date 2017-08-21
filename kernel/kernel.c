@@ -1,6 +1,6 @@
 #include "../interrupts/idt.h"
-#include "../drivers/keyboard.h"
-#include "../drivers/timer.h"
+#include "../interrupts/handlers/keyboard.h"
+#include "../interrupts/handlers/timer.h"
 
 /** 
  * Testing interrupts.
