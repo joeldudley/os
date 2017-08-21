@@ -1,10 +1,8 @@
-; `pusha` pushes all the general purpose registers onto the stack.
-
 [bits 16]
 disk_load:           ; Read 'dh' sectors from sector 2 onwards of the medium of type `dl` into 
                      ; `es:bx`.
-    pusha
-    push dx          ; This function will also overwrite 'dx'.
+    pusha            ; `pusha` pushes all the general purpose registers onto the stack.
+    push dx          ; This function will overwrite 'dx'.
 
     mov ah, READ     ; Sets `read` mode for BIOS interrupt 0x13 (disk read/write).
     mov al, dh       ; The number of sectors to read.
