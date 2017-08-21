@@ -18,22 +18,25 @@
 ; Sets the default offset to 0x7c00, the address at which the bootsector is loaded. Allows us to
 ; address memory as if the bootsector was loaded at 0x0.
 [org 0x7c00]
-; At start-up, the boot medium's type is stored in `dl`. We store this information for later use.
-mov [BOOT_TYPE], dl
 ; Sets the base of the real-mode stack and stack pointer.
 mov bp, RM_STACK_BASE
 mov sp, RM_STACK_BASE
 
 ; LOADING THE KERNEL
 
-; Reads our kernel from sector 2 onwards of the boot medium and stores it in memory.
+; Sets `read` mode for BIOS interrupt 0x13 (disk read/write).
+mov ah, READ
 ; The address our kernel will be loaded at.
 mov bx, KERNEL_ADDRESS
-; The size of our kernel in sectors.
-mov dh, KERNAL_SIZE
-; The medium the kernel is being loaded from.
-mov dl, [BOOT_TYPE]
-call disk_load
+; The number of sectors to read.
+mov al, KERNAL_SIZE
+; The sector, cylinder and head to start reading from.
+mov cl, SECTOR
+mov ch, CYLINDER
+mov dh, HEAD
+; Reads our kernel from the boot medium and stores it in memory at `es:bx`.
+; At start-up, the boot medium's type is stored in `dl`.
+int DISK_RW
 
 ; ENTERING PROTECTED MODE
 
@@ -67,32 +70,37 @@ mov esp, ebp
 
 ; JUMPING INTO THE KERNEL
 
-; Jumps to where the kernel was loaded.
 jmp KERNEL_ADDRESS
 
 ; CONSTANTS
 
-; The boot's drive address (overwritten above).
-BOOT_TYPE db 0
 ; The base of the real-mode stack.
 RM_STACK_BASE equ 0x9000
+; 'read' mode for BIOS interrupt 0x13 (disk read/write).
+READ equ 0x02
 ; The address at which the kernel is loaded.
 KERNEL_ADDRESS equ 0x1000
 ; The size of our kernel in sectors.
 KERNAL_SIZE equ 31
+; The sector to start reading from (0x01 is boot).
+SECTOR equ 0x02
+; The cylinder to read.
+CYLINDER equ 0x00
+; The head to read.
+HEAD equ 0x00
+; The BIOS interrupt for disk read/write.
+DISK_RW equ 0x13
+; The base of the protected-mode stack.
+PM_STACK_BASE equ 0x90000
 ; The size of a sector excluding the magic word.
 SECTOR_SIZE equ 510
 ; The magic word identifying a bootsector.
 MAGIC_WORD equ 0xaa55
-; The base of the protected-mode stack.
-PM_STACK_BASE equ 0x90000
 
 ; INCLUDES
 
 ; We include the files at the end so that they aren't run unless jumped to.
 %include "bootsector/global_descriptor_table.asm"
-%include "bootsector/functions/print.asm"
-%include "bootsector/functions/disk_load.asm"
 
 ; PADDING
 

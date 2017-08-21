@@ -40,11 +40,11 @@ clean:
 os-image.bin: bootsector/bootsector.bin kernel.bin
 	cat $^ > os-image.bin
 
-kernel.bin: bootsector/call_kernel.o ${OBJ}
+kernel.bin: kernel/call_kernel.o ${OBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
 
 # For debugging.
-kernel.elf: bootsector/call_kernel.o ${OBJ}
+kernel.elf: kernel/call_kernel.o ${OBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ 
 
 # Compiles all .c files in .o format.
