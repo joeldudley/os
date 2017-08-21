@@ -44,11 +44,4 @@ void init_timer(u32 divisor) {
  */
 void timer_callback(interrupt_args_t _) {
 	current_tick++;
-
-    char current_tick_ascii[256];
-    int_to_ascii(current_tick, current_tick_ascii);
-
-    print("Tick: ");
-    print(current_tick_ascii);
-    print("\n");
 }

@@ -1,8 +1,10 @@
 ; At start-up, the BIOS:
 ; * Searches for a boot sector on the bootable devices
 ;   * A boot sector is a sector ending with a magic word
-; * Loads the bootloader from the boot sector into memory at 0x7c00
+; * Loads the bootloader from the boot medium into memory at 0x7c00
 ; * Transfers execution to the bootloader
+
+; For backwards compatibiity, the CPU boots in 16-bit mode.
 
 ; The bootloader must then:
 ; * Find the kernel and load it into memory
@@ -12,14 +14,15 @@
 
 ; Our bootloader fits in a single sector, so we don't need a two-stage loader.
 
-[org 0x7c00]                ; Sets the default offset to 0x7c00, as this is   
-                            ; the address at which the bootsector is loaded.
+[org 0x7c00]                ; Sets the default offset to 0x7c00, the address at which the
+                            ; bootsector is loaded. Allows us to address memory as if the
+                            ; bootsector was loaded at 0x0.
 
-mov [BOOT_TYPE], dl         ; At start-up, the boot device's type is stored in 
+mov [BOOT_TYPE], dl         ; At start-up, the boot medium's type is stored in
                             ; `dl`. We store this information for later use.
 
 mov bp, RM_STACK_BASE       ; Sets the base of the real-mode stack.
-mov sp, bp                  ; Sets the real-mode stack pointer.
+mov sp, RM_STACK_BASE       ; Sets the real-mode stack pointer.
 
 call load_kernel            ; Loads the kernel from disk into memory.
 jmp enter_prot_mode         ; Enters protected mode.

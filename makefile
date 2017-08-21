@@ -21,12 +21,12 @@ CFLAGS = -g
 # Runs the operating system.
 # The first rule is run by default.
 run: clean os-image.bin
-	qemu-system-i386 -fda os-image.bin
+	qemu-system-i386 -drive file=os-image.bin,index=0,if=floppy,format=raw
 
 # Runs the operating system with a debugger.
 debug: clean os-image.bin kernel.elf
 	# The `-s` flag waits for a gdb connection on TCP port 1234.
-	qemu-system-i386 -s -fda os-image.bin -d guest_errors,int &
+	qemu-system-i386 -s -drive file=os-image.bin,index=0,if=floppy,format=raw -d guest_errors,int &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 # Deletes any existing build files.
