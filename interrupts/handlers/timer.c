@@ -16,7 +16,7 @@ void timer_callback(interrupt_args_t _);
 // Public functions.
 
 /**
- * Sets IRQ0s to be made at a specific frequency.
+ * Sets a handler for IRQ0s, and sets IRQ0s to be made at a specific frequency.
  *
  * divisor: At what fraction of the PIT tick rate to send IRQ0s.
  */
