@@ -1,4 +1,4 @@
-#include "../interrupts/idt.h"
+#include "../interrupts/build_idt.h"
 #include "../interrupts/handlers/keyboard.h"
 
 /** 

@@ -1,7 +1,7 @@
 #include "keyboard.h"
-#include "../idt.h"
 #include "../../drivers/screen.h"
 #include "../../utils/ports.h"
+#include "../handle_interrupts.h"
 
 // Private function declarations.
 void keyboard_callback(interrupt_args_t _);
