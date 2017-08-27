@@ -26,12 +26,12 @@
 // Registers pushed before calling the interrupt handler.
 typedef struct {
     uint32_t ds;                                      // Data segment selector.
-    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;  // Pushed by `pusha`.
+    uint32_t edi, esi, ebp, useless, ebx, edx, ecx, eax;  // Pushed by `pusha`.
     uint32_t interrupt_no, err_code;                  // Interrupt number and error code (if applicable).
-    uint32_t eip, cs, eflags, useresp, ss;            // Automatically pushed by the processor.
+    uint32_t eip, cs, eflags, esp, ss;            // Automatically pushed by the processor.
 } interrupt_args_t;
 
-typedef void (*isr_t)(interrupt_args_t);  // A pointer to a handler function.
+typedef void (*isr_t)(interrupt_args_t*);  // A pointer to a handler function.
 
 // Public functions.
 void initialise_hardware();

@@ -23,7 +23,7 @@ const char sc_ascii[] = {
         '/', '?', '?', '?', ' '};
 
 // Private function declarations.
-void keyboard_interrupt_handling_function(interrupt_args_t _);
+void keyboard_interrupt_handling_function(interrupt_args_t *_);
 void print_letter(uint8_t scancode);
 void user_input(char *input);
 
@@ -44,7 +44,7 @@ void init_keyboard() {
  *
  * _: Unused but required.
  */
-void keyboard_interrupt_handling_function(interrupt_args_t _) {
+void keyboard_interrupt_handling_function(interrupt_args_t *_) {
     /* When a key is pressed, a scancode is placed in port 0x60. */
     uint8_t scancode = port_read_byte(0x60);
 

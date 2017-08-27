@@ -15,17 +15,17 @@
 isr_t interrupt_handling_functions[NUM_IDT_ENTRIES];
 
 // Private function declarations.
-void handle_isr(interrupt_args_t r);
-void handle_irq(interrupt_args_t r);
+void handle_isr(interrupt_args_t *r);
+void handle_irq(interrupt_args_t *r);
 
 // Public functions.
 
 void initialise_hardware() {
-    /* Enable interruptions */
+    // Enable interrupts.
     asm volatile("sti");
-    /* IRQ0: timer */
+    // IRQ0: timer.
     init_timer(50);
-    /* IRQ1: keyboard */
+    // IRQ1: keyboard.
     init_keyboard();
 }
 
@@ -87,13 +87,13 @@ char *exception_messages[] = {
  *
  * r: The arguments pushed before handling the interrupt.
  */
-void handle_isr(interrupt_args_t r) {
+void handle_isr(interrupt_args_t *r) {
     print("Received an interrupt: ");
     char interrupt_number[3];
-    int_to_ascii(r.interrupt_no, interrupt_number);
+    int_to_ascii(r->interrupt_no, interrupt_number);
     print(interrupt_number);
     print("\n");
-    print(exception_messages[r.interrupt_no]);
+    print(exception_messages[r->interrupt_no]);
     print("\n");
 }
 
@@ -102,15 +102,15 @@ void handle_isr(interrupt_args_t r) {
  *
  * r: The arguments pushed before handling the interrupt request.
  */
-void handle_irq(interrupt_args_t r) {
+void handle_irq(interrupt_args_t *r) {
     /* After every interrupt we need to send an EOI to the PICs
      * or they will not send another interrupt again */
-	if (r.interrupt_no >= 40) port_write_byte(0xA0, 0x20); /* slave */
+	if (r->interrupt_no >= 40) port_write_byte(0xA0, 0x20); /* slave */
     port_write_byte(0x20, 0x20); /* master */
 
     /* Handle the interrupt in a more modular way */
-    if (interrupt_handling_functions[r.interrupt_no] != 0) {
-    	isr_t handler = interrupt_handling_functions[r.interrupt_no];
+    if (interrupt_handling_functions[r->interrupt_no] != 0) {
+    	isr_t handler = interrupt_handling_functions[r->interrupt_no];
         handler(r);
     }
 }

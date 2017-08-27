@@ -15,11 +15,15 @@ prep_isr:
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
+    push esp ; interrupt_args_t *r
 
-	; Calls the C interrupt handler.
+    ; Handle the ISR.
+    ; C code following the sysV ABI requires DF to be clear on function entry
+    cld
 	call handle_isr
 
 	; Restores the CPU's state.
+	pop eax
 	pop eax
 	mov ds, ax
 	mov es, ax
@@ -28,8 +32,6 @@ prep_isr:
 	popa
 	; Cleans up the pushed error code and pushed interrupt number.
 	add esp, 8
-	; Re-enables interrupts.
-	sti
 	; Return from the handling of the interrupt.
 	; Pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP.
 	iret
@@ -44,11 +46,13 @@ prep_irq_handler:
     mov es, ax
     mov fs, ax
     mov gs, ax
+    push esp
 
-    ; Calls the C interrupt request.
+    cld
     call handle_irq
 
     ; Different to the ISR code. TODO: Find out why.
+    pop ebx
     pop ebx
     mov ds, bx
     mov es, bx
@@ -56,7 +60,6 @@ prep_irq_handler:
     mov gs, bx
     popa
     add esp, 8
-    sti
     iret
 
 ; INTERRUPT HANDLERS
@@ -74,8 +77,6 @@ prep_irq_handler:
 ; 0: Divide by zero exception.
 global isr0_handler
 isr0_handler:
-    ; Disables interrupts.
-    cli
     push byte 0
     push byte 0
     jmp prep_isr
@@ -83,7 +84,6 @@ isr0_handler:
 ; 1: Debug exception.
 global isr1_handler
 isr1_handler:
-    cli
     push byte 0
     push byte 1
     jmp prep_isr
@@ -91,7 +91,6 @@ isr1_handler:
 ; 2: Non maskable interrupt exception.
 global isr2_handler
 isr2_handler:
-    cli
     push byte 0
     push byte 2
     jmp prep_isr
@@ -99,7 +98,6 @@ isr2_handler:
 ; 3: Int 3 exception
 global isr3_handler
 isr3_handler:
-    cli
     push byte 0
     push byte 3
     jmp prep_isr
@@ -107,7 +105,6 @@ isr3_handler:
 ; 4: INTO exception.
 global isr4_handler
 isr4_handler:
-    cli
     push byte 0
     push byte 4
     jmp prep_isr
@@ -115,7 +112,6 @@ isr4_handler:
 ; 5: Out of bounds exception.
 global isr5_handler
 isr5_handler:
-    cli
     push byte 0
     push byte 5
     jmp prep_isr
@@ -123,7 +119,6 @@ isr5_handler:
 ; 6: Invalid opcode exception.
 global isr6_handler
 isr6_handler:
-    cli
     push byte 0
     push byte 6
     jmp prep_isr
@@ -131,7 +126,6 @@ isr6_handler:
 ; 7: Coprocessor not available exception.
 global isr7_handler
 isr7_handler:
-    cli
     push byte 0
     push byte 7
     jmp prep_isr
@@ -139,7 +133,6 @@ isr7_handler:
 ; 8: Double fault exception.
 global isr8_handler
 isr8_handler:
-    cli
     ; Pushes an error code onto the stack.
     push byte 8
     jmp prep_isr
@@ -147,7 +140,6 @@ isr8_handler:
 ; 9: Coprocessor segment overrun exception.
 global isr9_handler
 isr9_handler:
-    cli
     push byte 0
     push byte 9
     jmp prep_isr
@@ -155,7 +147,6 @@ isr9_handler:
 ; 10: Bad TSS exception.
 global isr10_handler
 isr10_handler:
-    cli
     ; Pushes an error code onto the stack.
     push byte 10
     jmp prep_isr
@@ -163,7 +154,6 @@ isr10_handler:
 ; 11: Segment not present exception.
 global isr11_handler
 isr11_handler:
-    cli
     ; Pushes an error code onto the stack.
     push byte 11
     jmp prep_isr
@@ -171,7 +161,6 @@ isr11_handler:
 ; 12: Stack fault exception.
 global isr12_handler
 isr12_handler:
-    cli
     ; Pushes an error code onto the stack.
     push byte 12
     jmp prep_isr
@@ -179,7 +168,6 @@ isr12_handler:
 ; 13: General protection fault exception.
 global isr13_handler
 isr13_handler:
-    cli
     ; Pushes an error code onto the stack.
     push byte 13
     jmp prep_isr
@@ -187,7 +175,6 @@ isr13_handler:
 ; 14: Page fault exception.
 global isr14_handler
 isr14_handler:
-    cli
     ; Pushes an error code onto the stack.
     push byte 14
     jmp prep_isr
@@ -195,7 +182,6 @@ isr14_handler:
 ; 15: Reserved exception.
 global isr15_handler
 isr15_handler:
-    cli
     push byte 0
     push byte 15
     jmp prep_isr
@@ -203,7 +189,6 @@ isr15_handler:
 ; 16: Floating point exception.
 global isr16_handler
 isr16_handler:
-    cli
     push byte 0
     push byte 16
     jmp prep_isr
@@ -211,7 +196,6 @@ isr16_handler:
 ; 17: Alignment check exception.
 global isr17_handler
 isr17_handler:
-    cli
     push byte 0
     push byte 17
     jmp prep_isr
@@ -219,7 +203,6 @@ isr17_handler:
 ; 18: Machine check exception.
 global isr18_handler
 isr18_handler:
-    cli
     push byte 0
     push byte 18
     jmp prep_isr
@@ -227,7 +210,6 @@ isr18_handler:
 ; 19: Reserved.
 global isr19_handler
 isr19_handler:
-    cli
     push byte 0
     push byte 19
     jmp prep_isr
@@ -235,7 +217,6 @@ isr19_handler:
 ; 20: Reserved.
 global isr20_handler
 isr20_handler:
-    cli
     push byte 0
     push byte 20
     jmp prep_isr
@@ -243,7 +224,6 @@ isr20_handler:
 ; 21: Reserved.
 global isr21_handler
 isr21_handler:
-    cli
     push byte 0
     push byte 21
     jmp prep_isr
@@ -251,7 +231,6 @@ isr21_handler:
 ; 22: Reserved.
 global isr22_handler
 isr22_handler:
-    cli
     push byte 0
     push byte 22
     jmp prep_isr
@@ -259,7 +238,6 @@ isr22_handler:
 ; 23: Reserved.
 global isr23_handler
 isr23_handler:
-    cli
     push byte 0
     push byte 23
     jmp prep_isr
@@ -267,7 +245,6 @@ isr23_handler:
 ; 24: Reserved.
 global isr24_handler
 isr24_handler:
-    cli
     push byte 0
     push byte 24
     jmp prep_isr
@@ -275,7 +252,6 @@ isr24_handler:
 ; 25: Reserved.
 global isr25_handler
 isr25_handler:
-    cli
     push byte 0
     push byte 25
     jmp prep_isr
@@ -283,7 +259,6 @@ isr25_handler:
 ; 26: Reserved.
 global isr26_handler
 isr26_handler:
-    cli
     push byte 0
     push byte 26
     jmp prep_isr
@@ -291,7 +266,6 @@ isr26_handler:
 ; 27: Reserved.
 global isr27_handler
 isr27_handler:
-    cli
     push byte 0
     push byte 27
     jmp prep_isr
@@ -299,7 +273,6 @@ isr27_handler:
 ; 28: Reserved.
 global isr28_handler
 isr28_handler:
-    cli
     push byte 0
     push byte 28
     jmp prep_isr
@@ -307,7 +280,6 @@ isr28_handler:
 ; 29: Reserved.
 global isr29_handler
 isr29_handler:
-    cli
     push byte 0
     push byte 29
     jmp prep_isr
@@ -315,7 +287,6 @@ isr29_handler:
 ; 30: Reserved.
 global isr30_handler
 isr30_handler:
-    cli
     push byte 0
     push byte 30
     jmp prep_isr
@@ -323,7 +294,6 @@ isr30_handler:
 ; 31: Reserved.
 global isr31_handler
 isr31_handler:
-    cli
     push byte 0
     push byte 31
     jmp prep_isr

@@ -9,7 +9,7 @@ uint16_t pit_command_port = 0x43;
 uint16_t pit_channel_0_data_port = 0x40;
 
 // Private functions declarations.
-void timer_interrupt_handling_function(interrupt_args_t _);
+void timer_interrupt_handling_function(interrupt_args_t *_);
 
 // Public functions.
 
@@ -40,6 +40,6 @@ void init_timer(uint32_t divisor) {
  *
  * _: Unused but required.
  */
-void timer_interrupt_handling_function(interrupt_args_t _) {
+void timer_interrupt_handling_function(interrupt_args_t *_) {
 	current_tick++;
 }
