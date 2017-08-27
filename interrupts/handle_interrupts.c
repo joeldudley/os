@@ -1,7 +1,9 @@
 #include "handle_interrupts.h"
 #include "../utils/ports.h"
 #include "../drivers/screen.h"
-#include "../utils/util.h"
+#include "../utils/string.h"
+#include "../drivers/timer.h"
+#include "../drivers/keyboard.h"
 
 // Constants.
 #define NUM_IDT_ENTRIES 256
@@ -18,13 +20,22 @@ void handle_irq(interrupt_args_t r);
 
 // Public functions.
 
+void initialise_hardware() {
+    /* Enable interruptions */
+    asm volatile("sti");
+    /* IRQ0: timer */
+    init_timer(50);
+    /* IRQ1: keyboard */
+    init_keyboard();
+}
+
 /**
  * Adds a handler to the array of interrupt handler functions.
  *
  * idx: The index of the interrupt for which we want to add a handler function.
  * handler: A pointer to the handler function.
  */
-void register_interrupt_handling_function(u8 idx, isr_t handler) {
+void add_interrupt_handling_function_to_array(u8 idx, isr_t handler) {
     interrupt_handling_functions[idx] = handler;
 }
 

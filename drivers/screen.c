@@ -2,7 +2,7 @@
 
 #include "../utils/types.h"
 #include "../utils/ports.h"
-#include "../utils/util.h"
+#include "../utils/memory.h"
 
 // Constants.
 
@@ -58,15 +58,6 @@ void clear_screen() {
 }
 
 /**
- * Prints a string at the cursor's current location.
- *
- * *str: The char array to print.
- */
-void print(char *str) {
-    print_at(str, -1, -1);
-}
-
-/**
  * Prints a string at the specified (col, row) location.
  * If col/row < 0, prints at the cursor's current location.
  *
@@ -89,6 +80,25 @@ void print_at(char *str, int col, int row) {
         // Update the location on each iteration.
         location = print_char(str[i], col, row, WHITE_ON_BLACK);
     }
+}
+
+/**
+ * Prints a string at the cursor's current location.
+ *
+ * *str: The char array to print.
+ */
+void print(char *str) {
+    print_at(str, -1, -1);
+}
+
+/**
+ * Deletes the character at the current screen location.
+ */
+void print_backspace() {
+    int offset = get_cursor_loc() - 2;
+    int row = loc_to_row(offset);
+    int col = loc_to_col(offset);
+    print_char(0x08, col, row, WHITE_ON_BLACK);
 }
 
 // Private functions.
@@ -124,10 +134,14 @@ int print_char(char c, int col, int row, char attr) {
         // Use current cursor location if col/row are negative.
         location = get_cursor_loc();
 
-    // If the char is a new-line, print nothing. 
     if (c == '\n') {
+        // If the char is a new-line, print nothing and advance to the start of the next line.
         row = loc_to_row(location);
         location = coords_to_loc(0, row + 1);
+    } else if (c == 0x08) {
+        // If the char is a backspace, delete the character at the current screen location.
+        vid_mem[location] = ' ';
+        vid_mem[location + 1] = attr;
     } else {
         vid_mem[location] = c;
         vid_mem[location + 1] = attr;

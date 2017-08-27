@@ -34,7 +34,7 @@ typedef struct {
 typedef void (*isr_t) (interrupt_args_t);  // A pointer to a handler function.
 
 // Public functions.
-
-void register_interrupt_handling_function(u8 idx, isr_t handler);
+void initialise_hardware();
+void add_interrupt_handling_function_to_array(u8 idx, isr_t handler);
 
 #endif

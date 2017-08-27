@@ -1,6 +1,6 @@
 #include "timer.h"
-#include "../../utils/ports.h"
-#include "../handle_interrupts.h"
+#include "../utils/ports.h"
+#include "../interrupts/handle_interrupts.h"
 
 // Constants.
 u32 current_tick = 0;
@@ -9,7 +9,7 @@ u16 pit_command_port = 0x43;
 u16 pit_channel_0_data_port = 0x40;
 
 // Private functions declarations.
-void timer_callback(interrupt_args_t _);
+void timer_interrupt_handling_function(interrupt_args_t _);
 
 // Public functions.
 
@@ -20,7 +20,7 @@ void timer_callback(interrupt_args_t _);
  */
 void init_timer(u32 divisor) {
     // Sets a handler for IRQ0s.
-    register_interrupt_handling_function(IRQ0, timer_callback);
+    add_interrupt_handling_function_to_array(IRQ0, timer_interrupt_handling_function);
 
     // Calculate the desired IRQ0 frequency.
     u32 irq0_rate = pit_tick_rate / divisor;
@@ -40,6 +40,6 @@ void init_timer(u32 divisor) {
  *
  * _: Unused but required.
  */
-void timer_callback(interrupt_args_t _) {
+void timer_interrupt_handling_function(interrupt_args_t _) {
 	current_tick++;
 }
