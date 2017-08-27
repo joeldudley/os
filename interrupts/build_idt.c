@@ -1,13 +1,16 @@
 #include "build_idt.h"
 #include "../utils/ports.h"
 
+// The Interrupt Table Descriptor (IDT) allows us to define the handler routine to be called for
+// each interrupt.
+
 // Constants.
 #define KERNEL_CS 0x08
 #define NUM_IDT_ENTRIES 256
 
 // Variables.
 
-// The Interrupt Table Descriptor.
+// The IDT.
 idt_t idt;
 // The array of handlers used to load the IDT.
 asm_handler_t asm_handlers[NUM_IDT_ENTRIES];
@@ -24,38 +27,38 @@ void load_idt_from_asm_handler_array();
  */
 void build_and_load_idt() {
     // Add the special CPU-dedicated interrupt handlers to the interrupt array.
-    add_handler_to_asm_handler_array(0, (u32) isr0_handler_asm);
-    add_handler_to_asm_handler_array(1, (u32) isr1_handler_asm);
-    add_handler_to_asm_handler_array(2, (u32) isr2_handler_asm);
-    add_handler_to_asm_handler_array(3, (u32) isr3_handler_asm);
-    add_handler_to_asm_handler_array(4, (u32) isr4_handler_asm);
-    add_handler_to_asm_handler_array(5, (u32) isr5_handler_asm);
-    add_handler_to_asm_handler_array(6, (u32) isr6_handler_asm);
-    add_handler_to_asm_handler_array(7, (u32) isr7_handler_asm);
-    add_handler_to_asm_handler_array(8, (u32) isr8_handler_asm);
-    add_handler_to_asm_handler_array(9, (u32) isr9_handler_asm);
-    add_handler_to_asm_handler_array(10, (u32) isr10_handler_asm);
-    add_handler_to_asm_handler_array(11, (u32) isr11_handler_asm);
-    add_handler_to_asm_handler_array(12, (u32) isr12_handler_asm);
-    add_handler_to_asm_handler_array(13, (u32) isr13_handler_asm);
-    add_handler_to_asm_handler_array(14, (u32) isr14_handler_asm);
-    add_handler_to_asm_handler_array(15, (u32) isr15_handler_asm);
-    add_handler_to_asm_handler_array(16, (u32) isr16_handler_asm);
-    add_handler_to_asm_handler_array(17, (u32) isr17_handler_asm);
-    add_handler_to_asm_handler_array(18, (u32) isr18_handler_asm);
-    add_handler_to_asm_handler_array(19, (u32) isr19_handler_asm);
-    add_handler_to_asm_handler_array(20, (u32) isr20_handler_asm);
-    add_handler_to_asm_handler_array(21, (u32) isr21_handler_asm);
-    add_handler_to_asm_handler_array(22, (u32) isr22_handler_asm);
-    add_handler_to_asm_handler_array(23, (u32) isr23_handler_asm);
-    add_handler_to_asm_handler_array(24, (u32) isr24_handler_asm);
-    add_handler_to_asm_handler_array(25, (u32) isr25_handler_asm);
-    add_handler_to_asm_handler_array(26, (u32) isr26_handler_asm);
-    add_handler_to_asm_handler_array(27, (u32) isr27_handler_asm);
-    add_handler_to_asm_handler_array(28, (u32) isr28_handler_asm);
-    add_handler_to_asm_handler_array(29, (u32) isr29_handler_asm);
-    add_handler_to_asm_handler_array(30, (u32) isr30_handler_asm);
-    add_handler_to_asm_handler_array(31, (u32) isr31_handler_asm);
+    add_handler_to_asm_handler_array(0, (u32) isr0_handler);
+    add_handler_to_asm_handler_array(1, (u32) isr1_handler);
+    add_handler_to_asm_handler_array(2, (u32) isr2_handler);
+    add_handler_to_asm_handler_array(3, (u32) isr3_handler);
+    add_handler_to_asm_handler_array(4, (u32) isr4_handler);
+    add_handler_to_asm_handler_array(5, (u32) isr5_handler);
+    add_handler_to_asm_handler_array(6, (u32) isr6_handler);
+    add_handler_to_asm_handler_array(7, (u32) isr7_handler);
+    add_handler_to_asm_handler_array(8, (u32) isr8_handler);
+    add_handler_to_asm_handler_array(9, (u32) isr9_handler);
+    add_handler_to_asm_handler_array(10, (u32) isr10_handler);
+    add_handler_to_asm_handler_array(11, (u32) isr11_handler);
+    add_handler_to_asm_handler_array(12, (u32) isr12_handler);
+    add_handler_to_asm_handler_array(13, (u32) isr13_handler);
+    add_handler_to_asm_handler_array(14, (u32) isr14_handler);
+    add_handler_to_asm_handler_array(15, (u32) isr15_handler);
+    add_handler_to_asm_handler_array(16, (u32) isr16_handler);
+    add_handler_to_asm_handler_array(17, (u32) isr17_handler);
+    add_handler_to_asm_handler_array(18, (u32) isr18_handler);
+    add_handler_to_asm_handler_array(19, (u32) isr19_handler);
+    add_handler_to_asm_handler_array(20, (u32) isr20_handler);
+    add_handler_to_asm_handler_array(21, (u32) isr21_handler);
+    add_handler_to_asm_handler_array(22, (u32) isr22_handler);
+    add_handler_to_asm_handler_array(23, (u32) isr23_handler);
+    add_handler_to_asm_handler_array(24, (u32) isr24_handler);
+    add_handler_to_asm_handler_array(25, (u32) isr25_handler);
+    add_handler_to_asm_handler_array(26, (u32) isr26_handler);
+    add_handler_to_asm_handler_array(27, (u32) isr27_handler);
+    add_handler_to_asm_handler_array(28, (u32) isr28_handler);
+    add_handler_to_asm_handler_array(29, (u32) isr29_handler);
+    add_handler_to_asm_handler_array(30, (u32) isr30_handler);
+    add_handler_to_asm_handler_array(31, (u32) isr31_handler);
 
     // Remap the PIC.
     // TODO: Find out what this means.
@@ -71,22 +74,22 @@ void build_and_load_idt() {
     port_write_byte(0xA1, 0x0);
 
     // Add the hardware interrupt handlers to the interrupt array.
-    add_handler_to_asm_handler_array(32, (u32) irq0_handler_asm);
-    add_handler_to_asm_handler_array(33, (u32) irq1_handler_asm);
-    add_handler_to_asm_handler_array(34, (u32) irq2_handler_asm);
-    add_handler_to_asm_handler_array(35, (u32) irq3_handler_asm);
-    add_handler_to_asm_handler_array(36, (u32) irq4_handler_asm);
-    add_handler_to_asm_handler_array(37, (u32) irq5_handler_asm);
-    add_handler_to_asm_handler_array(38, (u32) irq6_handler_asm);
-    add_handler_to_asm_handler_array(39, (u32) irq7_handler_asm);
-    add_handler_to_asm_handler_array(40, (u32) irq8_handler_asm);
-    add_handler_to_asm_handler_array(41, (u32) irq9_handler_asm);
-    add_handler_to_asm_handler_array(42, (u32) irq10_handler_asm);
-    add_handler_to_asm_handler_array(43, (u32) irq11_handler_asm);
-    add_handler_to_asm_handler_array(44, (u32) irq12_handler_asm);
-    add_handler_to_asm_handler_array(45, (u32) irq13_handler_asm);
-    add_handler_to_asm_handler_array(46, (u32) irq14_handler_asm);
-    add_handler_to_asm_handler_array(47, (u32) irq15_handler_asm);
+    add_handler_to_asm_handler_array(32, (u32) irq0_handler);
+    add_handler_to_asm_handler_array(33, (u32) irq1_handler);
+    add_handler_to_asm_handler_array(34, (u32) irq2_handler);
+    add_handler_to_asm_handler_array(35, (u32) irq3_handler);
+    add_handler_to_asm_handler_array(36, (u32) irq4_handler);
+    add_handler_to_asm_handler_array(37, (u32) irq5_handler);
+    add_handler_to_asm_handler_array(38, (u32) irq6_handler);
+    add_handler_to_asm_handler_array(39, (u32) irq7_handler);
+    add_handler_to_asm_handler_array(40, (u32) irq8_handler);
+    add_handler_to_asm_handler_array(41, (u32) irq9_handler);
+    add_handler_to_asm_handler_array(42, (u32) irq10_handler);
+    add_handler_to_asm_handler_array(43, (u32) irq11_handler);
+    add_handler_to_asm_handler_array(44, (u32) irq12_handler);
+    add_handler_to_asm_handler_array(45, (u32) irq13_handler);
+    add_handler_to_asm_handler_array(46, (u32) irq14_handler);
+    add_handler_to_asm_handler_array(47, (u32) irq15_handler);
 
     load_idt_from_asm_handler_array();
 }

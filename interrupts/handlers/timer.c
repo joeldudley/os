@@ -20,7 +20,7 @@ void timer_callback(interrupt_args_t _);
  */
 void init_timer(u32 divisor) {
     // Sets a handler for IRQ0s.
-    register_interrupt_handler_function(IRQ0, timer_callback);
+    register_interrupt_handling_function(IRQ0, timer_callback);
 
     // Calculate the desired IRQ0 frequency.
     u32 irq0_rate = pit_tick_rate / divisor;

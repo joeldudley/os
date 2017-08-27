@@ -35,6 +35,6 @@ typedef void (*isr_t) (interrupt_args_t);  // A pointer to a handler function.
 
 // Public functions.
 
-void register_interrupt_handler_function(u8 idx, isr_t handler);
+void register_interrupt_handling_function(u8 idx, isr_t handler);
 
 #endif
