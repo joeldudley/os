@@ -3,6 +3,7 @@
 
 #include "../utils/types.h"
 
+// The index at which we want to register each software handler for the hardware interrupts.
 #define IRQ0 32
 #define IRQ1 33
 #define IRQ2 34
@@ -34,6 +35,6 @@ typedef void (*isr_t) (interrupt_args_t);  // A pointer to a handler function.
 
 // Public functions.
 
-void register_interrupt_handler(u8 idx, isr_t handler);
+void register_interrupt_handler_function(u8 idx, isr_t handler);
 
 #endif

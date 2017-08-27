@@ -1,29 +1,38 @@
 [extern handle_isr]
 [extern handle_irq]
 
-prep_isr:    ; Prepares the CPU to handle an interrupt.
-	pusha                  ; Saves the CPU's current state.
-	mov ax, ds             ; Lower 16-bits of eax = ds.
-	push eax               ; Save the data segment descriptor.
-	mov ax, 0x10           ; Kernel data segment descriptor.
-	mov ds, ax             ;   "
-	mov es, ax             ;   "
-	mov fs, ax             ;   "
-	mov gs, ax             ;   "
-	
-	call handle_isr        ; Calls the C interrupt handler.
-	
-	pop eax                ; Restores the CPU's state.
-	mov ds, ax             ;   "
-	mov es, ax             ;   "
-	mov fs, ax             ;   "
-	mov gs, ax             ;   "
-	popa                   ;   "
-	add esp, 8             ; Cleans up the pushed error code and pushed interrupt number.
-	sti                    ;   "
-	iret                   ; Pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP.
+; Prepares the CPU to handle an interrupt.
+prep_isr:
+    ; Saves the CPU's current state.
+	pusha
+	; Lower 16-bits of eax = ds.
+	mov ax, ds
+	; Save the data segment descriptor.
+	push eax
+	; Kernel data segment descriptor.
+	mov ax, 0x10
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
-; As above, except for two lines.
+	; Calls the C interrupt handler.
+	call handle_isr
+
+	; Restores the CPU's state.
+	pop eax
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	popa
+	; Cleans up the pushed error code and pushed interrupt number.
+	add esp, 8
+	sti
+	; Pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP.
+	iret
+
+; As above, except for the code to restore the CPU's state.
 prep_irq_handler:
     pusha
     mov ax, ds
@@ -34,9 +43,11 @@ prep_irq_handler:
     mov fs, ax
     mov gs, ax
 
-    call handle_irq        ; Calls the C interrupt request.
+    ; Calls the C interrupt request.
+    call handle_irq
 
-    pop ebx  			   ; Different than the ISR code. TODO: Find out why.
+    ; Different to the ISR code. TODO: Find out why.
+    pop ebx
     mov ds, bx
     mov es, bx
     mov fs, bx
@@ -49,265 +60,266 @@ prep_irq_handler:
 ; INTERRUPT HANDLERS
 
 ; We don't get information about which interrupt was called when the handler is run, so we need to
-; create a different handler for each interrupt.
+; create a different .asm handler for each interrupt.
+
+; Each .asm interrupt handler pushes the following onto the stack:
+; * A dummy error code onto the stack if the interrupt doesn't provide one (some of the
+;   CPU-dedicated interrupts do)
+; * The interrupt's index in the array of interrupt handler functions
 
 ; Special CPU-dedicated interrupt handlers.
 
-; Some of the CPU-dedicated interrupts push an error code onto the stack while others don't. We
-; will push a dummy error code onto the stack in the latter case to ensure that all interrupts
-; have the same stack structure.
-
 ; 0: Divide by zero exception.
-global isr0
-isr0:
+global isr0_handler_asm
+isr0_handler_asm:
     cli
     push byte 0
     push byte 0
     jmp prep_isr
 
 ; 1: Debug exception.
-global isr1
-isr1:
+global isr1_handler_asm
+isr1_handler_asm:
     cli
     push byte 0
     push byte 1
     jmp prep_isr
 
 ; 2: Non maskable interrupt exception.
-global isr2
-isr2:
+global isr2_handler_asm
+isr2_handler_asm:
     cli
     push byte 0
     push byte 2
     jmp prep_isr
 
 ; 3: Int 3 exception
-global isr3
-isr3:
+global isr3_handler_asm
+isr3_handler_asm:
     cli
     push byte 0
     push byte 3
     jmp prep_isr
 
 ; 4: INTO exception.
-global isr4
-isr4:
+global isr4_handler_asm
+isr4_handler_asm:
     cli
     push byte 0
     push byte 4
     jmp prep_isr
 
 ; 5: Out of bounds exception.
-global isr5
-isr5:
+global isr5_handler_asm
+isr5_handler_asm:
     cli
     push byte 0
     push byte 5
     jmp prep_isr
 
 ; 6: Invalid opcode exception.
-global isr6
-isr6:
+global isr6_handler_asm
+isr6_handler_asm:
     cli
     push byte 0
     push byte 6
     jmp prep_isr
 
 ; 7: Coprocessor not available exception.
-global isr7
-isr7:
+global isr7_handler_asm
+isr7_handler_asm:
     cli
     push byte 0
     push byte 7
     jmp prep_isr
 
 ; 8: Double fault exception.
-global isr8
-isr8:
+global isr8_handler_asm
+isr8_handler_asm:
     cli
     ; Pushes an error code onto the stack.
     push byte 8
     jmp prep_isr
 
 ; 9: Coprocessor segment overrun exception.
-global isr9
-isr9:
+global isr9_handler_asm
+isr9_handler_asm:
     cli
     push byte 0
     push byte 9
     jmp prep_isr
 
 ; 10: Bad TSS exception.
-global isr10
-isr10:
+global isr10_handler_asm
+isr10_handler_asm:
     cli
     ; Pushes an error code onto the stack.
     push byte 10
     jmp prep_isr
 
 ; 11: Segment not present exception.
-global isr11
-isr11:
+global isr11_handler_asm
+isr11_handler_asm:
     cli
     ; Pushes an error code onto the stack.
     push byte 11
     jmp prep_isr
 
 ; 12: Stack fault exception.
-global isr12
-isr12:
+global isr12_handler_asm
+isr12_handler_asm:
     cli
     ; Pushes an error code onto the stack.
     push byte 12
     jmp prep_isr
 
 ; 13: General protection fault exception.
-global isr13
-isr13:
+global isr13_handler_asm
+isr13_handler_asm:
     cli
     ; Pushes an error code onto the stack.
     push byte 13
     jmp prep_isr
 
 ; 14: Page fault exception.
-global isr14
-isr14:
+global isr14_handler_asm
+isr14_handler_asm:
     cli
     ; Pushes an error code onto the stack.
     push byte 14
     jmp prep_isr
 
 ; 15: Reserved exception.
-global isr15
-isr15:
+global isr15_handler_asm
+isr15_handler_asm:
     cli
     push byte 0
     push byte 15
     jmp prep_isr
 
 ; 16: Floating point exception.
-global isr16
-isr16:
+global isr16_handler_asm
+isr16_handler_asm:
     cli
     push byte 0
     push byte 16
     jmp prep_isr
 
 ; 17: Alignment check exception.
-global isr17
-isr17:
+global isr17_handler_asm
+isr17_handler_asm:
     cli
     push byte 0
     push byte 17
     jmp prep_isr
 
 ; 18: Machine check exception.
-global isr18
-isr18:
+global isr18_handler_asm
+isr18_handler_asm:
     cli
     push byte 0
     push byte 18
     jmp prep_isr
 
 ; 19: Reserved.
-global isr19
-isr19:
+global isr19_handler_asm
+isr19_handler_asm:
     cli
     push byte 0
     push byte 19
     jmp prep_isr
 
 ; 20: Reserved.
-global isr20
-isr20:
+global isr20_handler_asm
+isr20_handler_asm:
     cli
     push byte 0
     push byte 20
     jmp prep_isr
 
 ; 21: Reserved.
-global isr21
-isr21:
+global isr21_handler_asm
+isr21_handler_asm:
     cli
     push byte 0
     push byte 21
     jmp prep_isr
 
 ; 22: Reserved.
-global isr22
-isr22:
+global isr22_handler_asm
+isr22_handler_asm:
     cli
     push byte 0
     push byte 22
     jmp prep_isr
 
 ; 23: Reserved.
-global isr23
-isr23:
+global isr23_handler_asm
+isr23_handler_asm:
     cli
     push byte 0
     push byte 23
     jmp prep_isr
 
 ; 24: Reserved.
-global isr24
-isr24:
+global isr24_handler_asm
+isr24_handler_asm:
     cli
     push byte 0
     push byte 24
     jmp prep_isr
 
 ; 25: Reserved.
-global isr25
-isr25:
+global isr25_handler_asm
+isr25_handler_asm:
     cli
     push byte 0
     push byte 25
     jmp prep_isr
 
 ; 26: Reserved.
-global isr26
-isr26:
+global isr26_handler_asm
+isr26_handler_asm:
     cli
     push byte 0
     push byte 26
     jmp prep_isr
 
 ; 27: Reserved.
-global isr27
-isr27:
+global isr27_handler_asm
+isr27_handler_asm:
     cli
     push byte 0
     push byte 27
     jmp prep_isr
 
 ; 28: Reserved.
-global isr28
-isr28:
+global isr28_handler_asm
+isr28_handler_asm:
     cli
     push byte 0
     push byte 28
     jmp prep_isr
 
 ; 29: Reserved.
-global isr29
-isr29:
+global isr29_handler_asm
+isr29_handler_asm:
     cli
     push byte 0
     push byte 29
     jmp prep_isr
 
 ; 30: Reserved.
-global isr30
-isr30:
+global isr30_handler_asm
+isr30_handler_asm:
     cli
     push byte 0
     push byte 30
     jmp prep_isr
 
 ; 31: Reserved.
-global isr31
-isr31:
+global isr31_handler_asm
+isr31_handler_asm:
     cli
     push byte 0
     push byte 31
@@ -316,128 +328,128 @@ isr31:
 ; Hardware interrupt handlers.
 
 ; 0: System timer.
-global irq0
-irq0:
+global irq0_handler_asm
+irq0_handler_asm:
 	cli
 	push byte 0
 	push byte 32
 	jmp prep_irq_handler
 
 ; 1: Keyboard controller.
-global irq1
-irq1:
+global irq1_handler_asm
+irq1_handler_asm:
 	cli
 	push byte 1
 	push byte 33
 	jmp prep_irq_handler
 
 ; 2: Cascaded signals from IRQs 8-15.
-global irq2
-irq2:
+global irq2_handler_asm
+irq2_handler_asm:
 	cli
 	push byte 2
 	push byte 34
 	jmp prep_irq_handler
 
 ; 3: Serial port controller for serial port 2.
-global irq3
-irq3:
+global irq3_handler_asm
+irq3_handler_asm:
 	cli
 	push byte 3
 	push byte 35
 	jmp prep_irq_handler
 
 ; 4: Serial port controller for serial port 1.
-global irq4
-irq4:
+global irq4_handler_asm
+irq4_handler_asm:
 	cli
 	push byte 4
 	push byte 36
 	jmp prep_irq_handler
 
 ; 5: Parallel port 2 and 3 or sound card.
-global irq5
-irq5:
+global irq5_handler_asm
+irq5_handler_asm:
 	cli
 	push byte 5
 	push byte 37
 	jmp prep_irq_handler
 
 ; 6: Floppy disk controller.
-global irq6
-irq6:
+global irq6_handler_asm
+irq6_handler_asm:
 	cli
 	push byte 6
 	push byte 38
 	jmp prep_irq_handler
 
 ; 7: Parallel port 1.
-global irq7
-irq7:
+global irq7_handler_asm
+irq7_handler_asm:
 	cli
 	push byte 7
 	push byte 39
 	jmp prep_irq_handler
 
 ; 8: Real-time clock.
-global irq8
-irq8:
+global irq8_handler_asm
+irq8_handler_asm:
 	cli
 	push byte 8
 	push byte 40
 	jmp prep_irq_handler
 
 ; 9: Advanced Configuration and Power Interface system control interrupt on Intel chipsets.
-global irq9
-irq9:
+global irq9_handler_asm
+irq9_handler_asm:
 	cli
 	push byte 9
 	push byte 41
 	jmp prep_irq_handler
 
 ; 10: This interrupt is left open for the use of peripherals.
-global irq10
-irq10:
+global irq10_handler_asm
+irq10_handler_asm:
 	cli
 	push byte 10
 	push byte 42
 	jmp prep_irq_handler
 
 ; 11: This interrupt is left open for the use of peripherals.
-global irq11
-irq11:
+global irq11_handler_asm
+irq11_handler_asm:
 	cli
 	push byte 11
 	push byte 43
 	jmp prep_irq_handler
 
 ; 12: Mouse on PS/2 connector.
-global irq12
-irq12:
+global irq12_handler_asm
+irq12_handler_asm:
 	cli
 	push byte 12
 	push byte 44
 	jmp prep_irq_handler
 
 ; 13: CPU co-processor or integrated floating point unit or inter-processor interrupt.
-global irq13
-irq13:
+global irq13_handler_asm
+irq13_handler_asm:
 	cli
 	push byte 13
 	push byte 45
 	jmp prep_irq_handler
 
 ; 14: Primary ATA channel.
-global irq14
-irq14:
+global irq14_handler_asm
+irq14_handler_asm:
 	cli
 	push byte 14
 	push byte 46
 	jmp prep_irq_handler
 
 ; 15: Secondary ATA channel.
-global irq15
-irq15:
+global irq15_handler_asm
+irq15_handler_asm:
 	cli
 	push byte 15
 	push byte 47

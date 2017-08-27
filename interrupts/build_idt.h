@@ -21,7 +21,7 @@ typedef struct {
        * Bit 7: Set to 0 for unused interrupts */
     u8 flags;
     u16 high_offset;                    // Higher 16 bits of the interrupt service routine's address.
-} __attribute__((packed)) interrupt_t ;  // `packed` prevents the compiler from padding the struct.
+} __attribute__((packed)) asm_handler_t ;  // `packed` prevents the compiler from padding the struct.
 
 // An Interrupt Table Descriptor.
 typedef struct {
@@ -34,55 +34,55 @@ typedef struct {
 void build_and_load_idt();
 
 // Interrupt definitions.
-extern void isr0();
-extern void isr1();
-extern void isr2();
-extern void isr3();
-extern void isr4();
-extern void isr5();
-extern void isr6();
-extern void isr7();
-extern void isr8();
-extern void isr9();
-extern void isr10();
-extern void isr11();
-extern void isr12();
-extern void isr13();
-extern void isr14();
-extern void isr15();
-extern void isr16();
-extern void isr17();
-extern void isr18();
-extern void isr19();
-extern void isr20();
-extern void isr21();
-extern void isr22();
-extern void isr23();
-extern void isr24();
-extern void isr25();
-extern void isr26();
-extern void isr27();
-extern void isr28();
-extern void isr29();
-extern void isr30();
-extern void isr31();
+extern void isr0_handler_asm();
+extern void isr1_handler_asm();
+extern void isr2_handler_asm();
+extern void isr3_handler_asm();
+extern void isr4_handler_asm();
+extern void isr5_handler_asm();
+extern void isr6_handler_asm();
+extern void isr7_handler_asm();
+extern void isr8_handler_asm();
+extern void isr9_handler_asm();
+extern void isr10_handler_asm();
+extern void isr11_handler_asm();
+extern void isr12_handler_asm();
+extern void isr13_handler_asm();
+extern void isr14_handler_asm();
+extern void isr15_handler_asm();
+extern void isr16_handler_asm();
+extern void isr17_handler_asm();
+extern void isr18_handler_asm();
+extern void isr19_handler_asm();
+extern void isr20_handler_asm();
+extern void isr21_handler_asm();
+extern void isr22_handler_asm();
+extern void isr23_handler_asm();
+extern void isr24_handler_asm();
+extern void isr25_handler_asm();
+extern void isr26_handler_asm();
+extern void isr27_handler_asm();
+extern void isr28_handler_asm();
+extern void isr29_handler_asm();
+extern void isr30_handler_asm();
+extern void isr31_handler_asm();
 
 // Interrupt request definitions.
-extern void irq0();
-extern void irq1();
-extern void irq2();
-extern void irq3();
-extern void irq4();
-extern void irq5();
-extern void irq6();
-extern void irq7();
-extern void irq8();
-extern void irq9();
-extern void irq10();
-extern void irq11();
-extern void irq12();
-extern void irq13();
-extern void irq14();
-extern void irq15();
+extern void irq0_handler_asm();
+extern void irq1_handler_asm();
+extern void irq2_handler_asm();
+extern void irq3_handler_asm();
+extern void irq4_handler_asm();
+extern void irq5_handler_asm();
+extern void irq6_handler_asm();
+extern void irq7_handler_asm();
+extern void irq8_handler_asm();
+extern void irq9_handler_asm();
+extern void irq10_handler_asm();
+extern void irq11_handler_asm();
+extern void irq12_handler_asm();
+extern void irq13_handler_asm();
+extern void irq14_handler_asm();
+extern void irq15_handler_asm();
 
 #endif

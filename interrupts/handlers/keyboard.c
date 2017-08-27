@@ -14,7 +14,7 @@ void print_letter(u8 scancode);
  */
 void init_keyboard() {
    // Sets a handler for IRQ1s.
-   register_interrupt_handler(IRQ1, keyboard_callback);
+   register_interrupt_handler_function(IRQ1, keyboard_callback);
 }
 
 // Private functions.

@@ -7,7 +7,10 @@
 #define NUM_IDT_ENTRIES 256
 
 // Variables.
-isr_t interrupt_handlers[NUM_IDT_ENTRIES];		// An array of pointers to interrupt handlers.
+
+// An array of pointers to handler functions for the interrupts. The hardware interrupt handlers
+// delegate to these.
+isr_t interrupt_handler_functions[NUM_IDT_ENTRIES];
 
 // Private function declarations.
 void handle_isr(interrupt_args_t r);
@@ -16,13 +19,13 @@ void handle_irq(interrupt_args_t r);
 // Public functions.
 
 /**
- * Adds a handler to the array of interrupt handlers.
+ * Adds a handler to the array of interrupt handler functions.
  *
- * idx: The index of the interrupt for which we want to add a handler.
+ * idx: The index of the interrupt for which we want to add a handler function.
  * handler: A pointer to the handler function.
  */
-void register_interrupt_handler(u8 idx, isr_t handler) {
-    interrupt_handlers[idx] = handler;
+void register_interrupt_handler_function(u8 idx, isr_t handler) {
+    interrupt_handler_functions[idx] = handler;
 }
 
 // Private functions.
@@ -69,7 +72,7 @@ char *exception_messages[] = {
 };
 
 /**
- * The IDT delegates the handling of ISRs to this function.
+ * The .asm interrupt handler delegates the handling of ISRs to this function.
  *
  * r: The arguments pushed before handling the interrupt.
  */
@@ -84,7 +87,7 @@ void handle_isr(interrupt_args_t r) {
 }
 
 /**
- * The IDT delegates the handling of IRQs to this function.
+ * The .asm interrupt handlers delegate the handling of IRQs to this function.
  *
  * r: The arguments pushed before handling the interrupt request.
  */
@@ -95,8 +98,8 @@ void handle_irq(interrupt_args_t r) {
     port_write_byte(0x20, 0x20); /* master */
 
     /* Handle the interrupt in a more modular way */
-    if (interrupt_handlers[r.interrupt_no] != 0) {
-    	isr_t handler = interrupt_handlers[r.interrupt_no];
+    if (interrupt_handler_functions[r.interrupt_no] != 0) {
+    	isr_t handler = interrupt_handler_functions[r.interrupt_no];
         handler(r);
     }
 }

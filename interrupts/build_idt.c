@@ -6,111 +6,114 @@
 #define NUM_IDT_ENTRIES 256
 
 // Variables.
-idt_t idt;                 						// The Interrupt Table Descriptor.
-interrupt_t interrupts[NUM_IDT_ENTRIES];        // The IDT's array of interrupts.
+
+// The Interrupt Table Descriptor.
+idt_t idt;
+// The array of handlers used to load the IDT.
+asm_handler_t asm_handlers[NUM_IDT_ENTRIES];
 
 // Private function declarations.
-void add_interrupt_to_idt(int idx, u32 handler);
-void load_idt();
+void add_handler_to_asm_handler_array(int idx, u32 handler);
+void load_idt_from_asm_handler_array();
 
 // Public functions.
 
 /**
- * Adds the interrupt handlers and interrupt requests to the IDT and loads the IDT.
- * The IDT tells the processor which handler to call for each interrupt.
+ * Builds an array of .asm interrupt handlers and uses it to load the IDT.
+ * The IDT tells the processor which .asm handler to call for each interrupt.
  */
 void build_and_load_idt() {
-	// Add the interrupt handlers.
-    add_interrupt_to_idt(0, (u32) isr0);
-    add_interrupt_to_idt(1, (u32) isr1);
-    add_interrupt_to_idt(2, (u32) isr2);
-    add_interrupt_to_idt(3, (u32) isr3);
-    add_interrupt_to_idt(4, (u32) isr4);
-    add_interrupt_to_idt(5, (u32) isr5);
-    add_interrupt_to_idt(6, (u32) isr6);
-    add_interrupt_to_idt(7, (u32) isr7);
-    add_interrupt_to_idt(8, (u32) isr8);
-    add_interrupt_to_idt(9, (u32) isr9);
-    add_interrupt_to_idt(10, (u32) isr10);
-    add_interrupt_to_idt(11, (u32) isr11);
-    add_interrupt_to_idt(12, (u32) isr12);
-    add_interrupt_to_idt(13, (u32) isr13);
-    add_interrupt_to_idt(14, (u32) isr14);
-    add_interrupt_to_idt(15, (u32) isr15);
-    add_interrupt_to_idt(16, (u32) isr16);
-    add_interrupt_to_idt(17, (u32) isr17);
-    add_interrupt_to_idt(18, (u32) isr18);
-    add_interrupt_to_idt(19, (u32) isr19);
-    add_interrupt_to_idt(20, (u32) isr20);
-    add_interrupt_to_idt(21, (u32) isr21);
-    add_interrupt_to_idt(22, (u32) isr22);
-    add_interrupt_to_idt(23, (u32) isr23);
-    add_interrupt_to_idt(24, (u32) isr24);
-    add_interrupt_to_idt(25, (u32) isr25);
-    add_interrupt_to_idt(26, (u32) isr26);
-    add_interrupt_to_idt(27, (u32) isr27);
-    add_interrupt_to_idt(28, (u32) isr28);
-    add_interrupt_to_idt(29, (u32) isr29);
-    add_interrupt_to_idt(30, (u32) isr30);
-    add_interrupt_to_idt(31, (u32) isr31);
+    // Add the special CPU-dedicated interrupt handlers to the interrupt array.
+    add_handler_to_asm_handler_array(0, (u32) isr0_handler_asm);
+    add_handler_to_asm_handler_array(1, (u32) isr1_handler_asm);
+    add_handler_to_asm_handler_array(2, (u32) isr2_handler_asm);
+    add_handler_to_asm_handler_array(3, (u32) isr3_handler_asm);
+    add_handler_to_asm_handler_array(4, (u32) isr4_handler_asm);
+    add_handler_to_asm_handler_array(5, (u32) isr5_handler_asm);
+    add_handler_to_asm_handler_array(6, (u32) isr6_handler_asm);
+    add_handler_to_asm_handler_array(7, (u32) isr7_handler_asm);
+    add_handler_to_asm_handler_array(8, (u32) isr8_handler_asm);
+    add_handler_to_asm_handler_array(9, (u32) isr9_handler_asm);
+    add_handler_to_asm_handler_array(10, (u32) isr10_handler_asm);
+    add_handler_to_asm_handler_array(11, (u32) isr11_handler_asm);
+    add_handler_to_asm_handler_array(12, (u32) isr12_handler_asm);
+    add_handler_to_asm_handler_array(13, (u32) isr13_handler_asm);
+    add_handler_to_asm_handler_array(14, (u32) isr14_handler_asm);
+    add_handler_to_asm_handler_array(15, (u32) isr15_handler_asm);
+    add_handler_to_asm_handler_array(16, (u32) isr16_handler_asm);
+    add_handler_to_asm_handler_array(17, (u32) isr17_handler_asm);
+    add_handler_to_asm_handler_array(18, (u32) isr18_handler_asm);
+    add_handler_to_asm_handler_array(19, (u32) isr19_handler_asm);
+    add_handler_to_asm_handler_array(20, (u32) isr20_handler_asm);
+    add_handler_to_asm_handler_array(21, (u32) isr21_handler_asm);
+    add_handler_to_asm_handler_array(22, (u32) isr22_handler_asm);
+    add_handler_to_asm_handler_array(23, (u32) isr23_handler_asm);
+    add_handler_to_asm_handler_array(24, (u32) isr24_handler_asm);
+    add_handler_to_asm_handler_array(25, (u32) isr25_handler_asm);
+    add_handler_to_asm_handler_array(26, (u32) isr26_handler_asm);
+    add_handler_to_asm_handler_array(27, (u32) isr27_handler_asm);
+    add_handler_to_asm_handler_array(28, (u32) isr28_handler_asm);
+    add_handler_to_asm_handler_array(29, (u32) isr29_handler_asm);
+    add_handler_to_asm_handler_array(30, (u32) isr30_handler_asm);
+    add_handler_to_asm_handler_array(31, (u32) isr31_handler_asm);
 
     // Remap the PIC.
     // TODO: Find out what this means.
-   port_write_byte(0x20, 0x11);
-   port_write_byte(0xA0, 0x11);
-   port_write_byte(0x21, 0x20);
-   port_write_byte(0xA1, 0x28);
-   port_write_byte(0x21, 0x04);
-   port_write_byte(0xA1, 0x02);
-   port_write_byte(0x21, 0x01);
-   port_write_byte(0xA1, 0x01);
-   port_write_byte(0x21, 0x0);
-   port_write_byte(0xA1, 0x0);
+    port_write_byte(0x20, 0x11);
+    port_write_byte(0xA0, 0x11);
+    port_write_byte(0x21, 0x20);
+    port_write_byte(0xA1, 0x28);
+    port_write_byte(0x21, 0x04);
+    port_write_byte(0xA1, 0x02);
+    port_write_byte(0x21, 0x01);
+    port_write_byte(0xA1, 0x01);
+    port_write_byte(0x21, 0x0);
+    port_write_byte(0xA1, 0x0);
 
-    // Add the interrupt requests.
-    add_interrupt_to_idt(32, (u32) irq0);
-    add_interrupt_to_idt(33, (u32) irq1);
-    add_interrupt_to_idt(34, (u32) irq2);
-    add_interrupt_to_idt(35, (u32) irq3);
-    add_interrupt_to_idt(36, (u32) irq4);
-    add_interrupt_to_idt(37, (u32) irq5);
-    add_interrupt_to_idt(38, (u32) irq6);
-    add_interrupt_to_idt(39, (u32) irq7);
-    add_interrupt_to_idt(40, (u32) irq8);
-    add_interrupt_to_idt(41, (u32) irq9);
-    add_interrupt_to_idt(42, (u32) irq10);
-    add_interrupt_to_idt(43, (u32) irq11);
-    add_interrupt_to_idt(44, (u32) irq12);
-    add_interrupt_to_idt(45, (u32) irq13);
-    add_interrupt_to_idt(46, (u32) irq14);
-    add_interrupt_to_idt(47, (u32) irq15);
+    // Add the hardware interrupt handlers to the interrupt array.
+    add_handler_to_asm_handler_array(32, (u32) irq0_handler_asm);
+    add_handler_to_asm_handler_array(33, (u32) irq1_handler_asm);
+    add_handler_to_asm_handler_array(34, (u32) irq2_handler_asm);
+    add_handler_to_asm_handler_array(35, (u32) irq3_handler_asm);
+    add_handler_to_asm_handler_array(36, (u32) irq4_handler_asm);
+    add_handler_to_asm_handler_array(37, (u32) irq5_handler_asm);
+    add_handler_to_asm_handler_array(38, (u32) irq6_handler_asm);
+    add_handler_to_asm_handler_array(39, (u32) irq7_handler_asm);
+    add_handler_to_asm_handler_array(40, (u32) irq8_handler_asm);
+    add_handler_to_asm_handler_array(41, (u32) irq9_handler_asm);
+    add_handler_to_asm_handler_array(42, (u32) irq10_handler_asm);
+    add_handler_to_asm_handler_array(43, (u32) irq11_handler_asm);
+    add_handler_to_asm_handler_array(44, (u32) irq12_handler_asm);
+    add_handler_to_asm_handler_array(45, (u32) irq13_handler_asm);
+    add_handler_to_asm_handler_array(46, (u32) irq14_handler_asm);
+    add_handler_to_asm_handler_array(47, (u32) irq15_handler_asm);
 
-    load_idt();
+    load_idt_from_asm_handler_array();
 }
 
 // Private functions.
 
 /**
- * Adds a kernel-privilege, used 32-bit interrupt gate to the IDT.
+ * Adds a kernel-privilege, used 32-bit interrupt handler to the array of .asm interrupt handlers.
  *
- * idx: The index of the interrupt for which we are adding a gate.
- * handler: The interrupt gate definition.
+ * idx: The index of the interrupt for which we are adding a handler.
+ * handler: The interrupt handler definition.
  */
-void add_interrupt_to_idt(int idx, u32 handler) {
-	interrupts[idx].low_offset = low_16(handler);
-	interrupts[idx].sel = KERNEL_CS;
-	interrupts[idx].always0 = 0;
-    // A kernel-privilege, used 32-bit interrupt gate.
-	interrupts[idx].flags = 0x8E;
-	interrupts[idx].high_offset = high_16(handler);
+void add_handler_to_asm_handler_array(int idx, u32 handler) {
+    asm_handlers[idx].low_offset = low_16(handler);
+    asm_handlers[idx].sel = KERNEL_CS;
+    asm_handlers[idx].always0 = 0;
+    // Flags indicate a kernel-privilege, used 32-bit interrupt gate.
+    asm_handlers[idx].flags = 0x8E;
+    asm_handlers[idx].high_offset = high_16(handler);
 }
 
 /**
- * Loads the IDT.
+ * Loads the IDT using the .asm interrupt handler array.
  */
-void load_idt() {
-    idt.base = (u32) &interrupts;
-    idt.limit = NUM_IDT_ENTRIES * sizeof(interrupt_t) - 1;
+void load_idt_from_asm_handler_array() {
+    idt.base = (u32) &asm_handlers;
+    idt.limit = NUM_IDT_ENTRIES * sizeof(asm_handler_t) - 1;
     // `lidtl` is an assembly instruction to load the IDT.
     asm volatile("lidtl (%0)" : : "r" (&idt));
 }
