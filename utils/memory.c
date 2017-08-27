@@ -22,7 +22,25 @@ void memory_copy(const char *src, char *dest, int len) {
  * val: The value to set every element of the array to.
  * len: The length of the array.
  */
-void memory_set(u8 *dest, u8 val, int len) {
-	u8 *temp = dest;
+void memory_set(uint8_t *dest, uint8_t val, int len) {
+	uint8_t *temp = dest;
 	for (; len != 0; len--) *temp++ = val;
+}
+
+/**
+ * Extracts the lower 16 bits of a 32-bit address.
+ *
+ * address: The 32-bit address.
+ */
+uint16_t low_16(uint32_t address) {
+    return (uint16_t) (address & 0xffff);
+}
+
+/**
+ * Extracts the higher 16 bits of a 32-bit address.
+ *
+ * address: The 32-bit address.
+ */
+uint16_t high_16(uint32_t address) {
+    return (uint16_t) ((address >> 16) & 0xffff);
 }

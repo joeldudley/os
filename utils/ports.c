@@ -1,4 +1,4 @@
-#include "types.h"
+#include <stdint.h>
 
 // Public functions.
 
@@ -8,7 +8,7 @@
  * port: The port to write to.
  * data: The byte to write.
  */
-void port_write_byte(u16 port, u8 data) {
+void port_write_byte(uint16_t port, uint8_t data) {
     asm("out %%al, %%dx" : : "a" (data), "d" (port));
 }
 
@@ -19,8 +19,8 @@ void port_write_byte(u16 port, u8 data) {
  * 
  * returns: The byte that was read.
  */
-u8 port_read_byte(u16 port) {
-    u8 result;
+uint8_t port_read_byte(uint16_t port) {
+    uint8_t result;
     asm("in %%dx, %%al" : "=a" (result) : "d" (port));
     return result;
 }

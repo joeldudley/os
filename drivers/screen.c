@@ -1,6 +1,5 @@
 #include "screen.h"
-
-#include "../utils/types.h"
+#include <stdint.h>
 #include "../utils/ports.h"
 #include "../utils/memory.h"
 
@@ -198,10 +197,10 @@ void set_cursor_loc(int location) {
     location /= 2;
     // Write the high byte of the cursor's location.
     port_write_byte(VGA_IDX_PORT, CURSOR_LOCATION_REGISTER_H);
-    port_write_byte(VGA_DATA_PORT, (u8) (location >> 8));
+    port_write_byte(VGA_DATA_PORT, (uint8_t) (location >> 8));
     // Write the low byte of the cursor's location.
     port_write_byte(VGA_IDX_PORT, CURSOR_LOCATION_REGISTER_L);
-    port_write_byte(VGA_DATA_PORT, (u8) (location & 0xff));
+    port_write_byte(VGA_DATA_PORT, (uint8_t) (location & 0xff));
 }
 
 /**

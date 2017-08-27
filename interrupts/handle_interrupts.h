@@ -1,7 +1,7 @@
 #ifndef HANDLE_INTERRUPTS_H
 #define HANDLE_INTERRUPTS_H
 
-#include "../utils/types.h"
+#include <stdint.h>
 
 // The index at which we want to register each software handler for the hardware interrupts.
 #define IRQ0 32
@@ -25,16 +25,17 @@
 
 // Registers pushed before calling the interrupt handler.
 typedef struct {
-   u32 ds;                                      // Data segment selector.
-   u32 edi, esi, ebp, esp, ebx, edx, ecx, eax;  // Pushed by `pusha`.
-   u32 interrupt_no, err_code;                  // Interrupt number and error code (if applicable).
-   u32 eip, cs, eflags, useresp, ss;            // Automatically pushed by the processor.
+    uint32_t ds;                                      // Data segment selector.
+    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;  // Pushed by `pusha`.
+    uint32_t interrupt_no, err_code;                  // Interrupt number and error code (if applicable).
+    uint32_t eip, cs, eflags, useresp, ss;            // Automatically pushed by the processor.
 } interrupt_args_t;
 
-typedef void (*isr_t) (interrupt_args_t);  // A pointer to a handler function.
+typedef void (*isr_t)(interrupt_args_t);  // A pointer to a handler function.
 
 // Public functions.
 void initialise_hardware();
-void add_interrupt_handling_function_to_array(u8 idx, isr_t handler);
+
+void add_interrupt_handling_function_to_array(uint8_t idx, isr_t handler);
 
 #endif

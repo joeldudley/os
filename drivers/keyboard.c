@@ -24,7 +24,7 @@ const char sc_ascii[] = {
 
 // Private function declarations.
 void keyboard_interrupt_handling_function(interrupt_args_t _);
-void print_letter(u8 scancode);
+void print_letter(uint8_t scancode);
 void user_input(char *input);
 
 // Public functions.
@@ -46,7 +46,7 @@ void init_keyboard() {
  */
 void keyboard_interrupt_handling_function(interrupt_args_t _) {
     /* When a key is pressed, a scancode is placed in port 0x60. */
-    u8 scancode = port_read_byte(0x60);
+    uint8_t scancode = port_read_byte(0x60);
 
     if (scancode > RECOGNISED_SCANCODES) {
         return;
@@ -65,7 +65,6 @@ void keyboard_interrupt_handling_function(interrupt_args_t _) {
             asm volatile("hlt");
 
         } else {
-            print("You said: ");
             print(key_buffer);
             print("\n> ");
 

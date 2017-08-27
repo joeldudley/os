@@ -1,4 +1,4 @@
-# On OSX, this makefile requires a GCC cross-compiler - see 
+# On OSX, this makefile requires a GCC cross-compiler - see
 # http://wiki.osdev.org/GCC_Cross-Compiler.
 
 # `$@` refers to the output file.
@@ -7,16 +7,14 @@
 
 # We print a variable using `$(info [${VAR}])`.
 
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c interrupts/*.c interrupts/handlers/*.c utils/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h interrupts/*.h interrupts/handlers/*.h utils/*.h)
-# Nice syntax for file extension replacement
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c interrupts/*.c utils/*.c)
+HEADERS = $(wildcard kernel/*.h drivers/*.h interrupts/*.h utils/*.h)
 OBJ = ${C_SOURCES:.c=.o interrupts/asm_interrupt_handlers.o}
 
-# Change this if your cross-compiler is somewhere else
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
 GDB = /usr/local/i386elfgcc/bin/i386-elf-gdb
 # -g: Use debugging symbols in gcc
-CFLAGS = -g
+CFLAGS = -g -ffreestanding -Wall -Wextra -fno-exceptions -m32
 
 # Runs the operating system.
 # The first rule is run by default.
@@ -31,25 +29,24 @@ debug: clean os-image.bin kernel.elf
 
 # Deletes any existing build files.
 clean:
-	rm -rf *.bin *.elf
-	rm -rf kernel/*.o drivers/*.o interrupts/*.o interrupts/handlers/*.o utils/*.o bootsector/*.bin bootsector/*.o
-	
+	rm -rf *.bin *.elf kernel/*.o drivers/*.o interrupts/*.o interrupts/handlers/*.o utils/*.o bootsector/*.bin bootsector/*.o
+
 # The targets below should not be invoked directly.
 
 # Concatenates the bootsector and kernal binaries into a single operating system binary.
 os-image.bin: bootsector/bootsector.bin kernel.bin
 	cat $^ > os-image.bin
 
-kernel.bin: kernel/call_kernel.o ${OBJ}
+kernel.bin: bootsector/call_kernel.o ${OBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
 
 # For debugging.
-kernel.elf: kernel/call_kernel.o ${OBJ}
-	i386-elf-ld -o $@ -Ttext 0x1000 $^ 
+kernel.elf: bootsector/call_kernel.o ${OBJ}
+	i386-elf-ld -o $@ -Ttext 0x1000 $^
 
 # Compiles all .c files in .o format.
 %.o: %.c ${HEADERS}
-	${CC} ${CFLAGS} -ffreestanding -c $< -o $@
+	${CC} ${CFLAGS} -c $< -o $@
 
 # Assembles all .asm files in .o format.
 %.o: %.asm

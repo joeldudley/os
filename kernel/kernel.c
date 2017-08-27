@@ -3,9 +3,9 @@
 #include "../drivers/screen.h"
 
 /** 
- * Testing interrupts.
+ * Running the echo terminal.
  */
-void main() {
+void kernel_main() {
     build_and_load_idt();
     initialise_hardware();
     clear_screen();

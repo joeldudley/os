@@ -35,7 +35,7 @@ void initialise_hardware() {
  * idx: The index of the interrupt for which we want to add a handler function.
  * handler: A pointer to the handler function.
  */
-void add_interrupt_handling_function_to_array(u8 idx, isr_t handler) {
+void add_interrupt_handling_function_to_array(uint8_t idx, isr_t handler) {
     interrupt_handling_functions[idx] = handler;
 }
 

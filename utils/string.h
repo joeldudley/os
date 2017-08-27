@@ -1,7 +1,7 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include "types.h"
+#include <stdint.h>
 
 // Public functions.
 void int_to_ascii(int n, char str[]);

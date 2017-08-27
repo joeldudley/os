@@ -1,9 +1,9 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include "../utils/types.h"
+#include <stdint.h>
 
 // Public functions.
-void init_timer(u32 freq);
+void init_timer(uint32_t freq);
 
 #endif
