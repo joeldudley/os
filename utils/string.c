@@ -1,4 +1,5 @@
 #include "string.h"
+#include <stdint.h>
 
 // Public functions.
 
@@ -34,6 +35,33 @@ void int_to_ascii(int n, char str[]) {
 
     // Reverse the ASCII integer's order.
     reverse(str);
+}
+
+/**
+ * Converts a hex value to its ASCII string equivalent.
+ *
+ * hex: The hex value to convert.
+ * str[]: The output string.
+ * // TODO: Inspect this code to understand it.
+ */
+void hex_to_ascii(int hex, char str[]) {
+    append(str, '0');
+    append(str, 'x');
+    char zeros = 0;
+
+    int32_t tmp;
+    int i;
+    for (i = 28; i > 0; i -= 4) {
+        tmp = (hex >> i) & 0xF;
+        if (tmp == 0 && zeros == 0) continue;
+        zeros = 1;
+        if (tmp > 0xA) append(str, tmp - 0xA + 'a');
+        else append(str, tmp + '0');
+    }
+
+    tmp = hex & 0xF;
+    if (tmp >= 0xA) append(str, tmp - 0xA + 'a');
+    else append(str, tmp + '0');
 }
 
 /**

@@ -35,7 +35,6 @@ mov cl, SECTOR
 mov ch, CYLINDER
 mov dh, HEAD
 ; Reads our kernel from the boot medium and stores it in memory at `es:bx`.
-; At start-up, the boot medium's type is stored in `dl`.
 int DISK_RW
 
 ; ENTERING PROTECTED MODE

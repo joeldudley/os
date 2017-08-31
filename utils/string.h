@@ -5,6 +5,7 @@
 
 // Public functions.
 void int_to_ascii(int n, char str[]);
+void hex_to_ascii(int hex, char str[]);
 void reverse(char str[]);
 int strlen(const char str[]);
 void append(char str[], char n);

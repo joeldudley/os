@@ -4,6 +4,7 @@
 #include "../utils/string.h"
 #include "../drivers/timer.h"
 #include "../drivers/keyboard.h"
+#include "../drivers/floppy.h"
 
 // Constants.
 #define NUM_IDT_ENTRIES 256
@@ -20,13 +21,18 @@ void handle_irq(interrupt_args_t *r);
 
 // Public functions.
 
-void initialise_hardware() {
+/**
+ * Sets up the IRQs we wish to handle.
+ */
+void initialise_irqs() {
     // Enable interrupts.
     asm volatile("sti");
     // IRQ0: timer.
     init_timer(50);
     // IRQ1: keyboard.
     init_keyboard();
+    // IRQ6: floppy.
+    init_floppy();
 }
 
 /**

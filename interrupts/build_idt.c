@@ -1,5 +1,6 @@
 #include "build_idt.h"
 #include "../utils/ports.h"
+#include "../utils/memory.h"
 
 // The Interrupt Table Descriptor (IDT) allows us to define the handler routine to be called for
 // each interrupt.
